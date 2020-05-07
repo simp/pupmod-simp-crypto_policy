@@ -1,0 +1,48 @@
+{
+  "name": "simp-crypto_policy",
+  "version": "0.1.0",
+  "author": "SIMP Team",
+  "summary": "",
+  "license": "Apache-2.0",
+  "source": "https://github.com/simp/pupmod-simp-crypto_policy",
+  "dependencies": [
+  ],
+  "tags": [
+    "NIST",
+    "STIG",
+    "compliance",
+    "crypto",
+    "disa_stig",
+    "fips",
+    "simp"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.0 < 7.0.0"
+    }
+  ],
+  "pdk-version": "1.17.0",
+  "template-url": "pdk-default#1.17.0",
+  "template-ref": "tags/1.17.0-0-gd3a4319"
+}
