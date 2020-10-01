@@ -1,4 +1,4 @@
-# @summary manage the installation of the crypto policy package(s)
+# @summary Manage the installation of the crypto policy package(s)
 #
 # @param packages
 #   The list of packages to manage for this capability

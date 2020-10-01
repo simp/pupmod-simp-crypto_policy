@@ -6,7 +6,7 @@
 #   * Will be checked against `$facts['crypto_policy__state']['global_policies_available']` for validity
 #
 # @param validate_policy
-#   Disables validiation of the `$ensure` parameter prior to application
+#   Disables validation of the `$ensure` parameter prior to application
 #
 # @param force_fips_override
 #   Set this to indicate that you wish to force the system into the mode

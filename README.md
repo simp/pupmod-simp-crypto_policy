@@ -33,7 +33,7 @@ See `update-crypto-policy(8)` for additional information.
 Manages the system-wide crypto policy.
 
 Applications may opt-in, or out, of usage by following the steps outlined in
-`update-crypto-=policy(8)`.
+`update-crypto-policy(8)`.
 
 ## Usage
 
