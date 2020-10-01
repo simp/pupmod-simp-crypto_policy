@@ -9,7 +9,7 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy::update (
-  Stdlib::Absolutepath    $command  = '/usr/bin/update-crypto-policies'
+  Stdlib::Absolutepath $command = '/usr/bin/update-crypto-policies'
 ) {
   if $facts['crypto_policy__state'] {
     exec { 'update global crypto policy':
