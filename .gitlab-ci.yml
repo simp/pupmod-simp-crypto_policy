@@ -294,7 +294,6 @@ pup7-lint:
 pup5-unit:
   <<: *pup_5
   <<: *unit_tests
-  <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
 
 pup6-unit:
   <<: *pup_6

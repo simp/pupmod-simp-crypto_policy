@@ -35,7 +35,7 @@ Facter.add('crypto_policy__state') do
 
       system_state['global_policy_applied'] = !Array(output).grep(%r{is applied}).empty? if output
 
-      system_state['global_policies_available'] = Dir.glob('/usr/share/crypto-policies/policies/*.pol').select { |x| File.file?(x) }.map { |x| File.basename(x).sub(%r{\.pol$}, '') }
+      system_state['global_policies_available'] = Dir.glob('/usr/share/crypto-policies/policies/*.pol').select { |x| File.file?(x) }.map { |x| File.basename(x, '.pol') }
     end
 
     system_state
