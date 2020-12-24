@@ -19,7 +19,6 @@ describe 'crypto_policy__state' do
       expect(Facter::Core::Execution).to receive(:execute).with('update-crypto-policies --no-reload --show', on_fail: false).and_return("DEFAULT\n")
 
 
-      allow(Dir).to receive(:glob).with(anything).and_call_original
       expect(Dir).to receive(:glob).with('/usr/share/crypto-policies/policies/*.pol').and_return(
         [
           '/usr/share/crypto-policies/policies/DEFAULT.pol',
