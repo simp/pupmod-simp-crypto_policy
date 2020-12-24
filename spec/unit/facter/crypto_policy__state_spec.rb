@@ -18,19 +18,15 @@ describe 'crypto_policy__state' do
     before :each do
       expect(Facter::Core::Execution).to receive(:execute).with('update-crypto-policies --no-reload --show', on_fail: false).and_return("DEFAULT\n")
 
-      allow(Dir).to receive(:glob).with(anything).and_call_original
-      expect(Dir).to receive(:glob).with('/usr/share/crypto-policies/*').and_return(
-        [
-          '/usr/share/crypto-policies/DEFAULT',
-          '/usr/share/crypto-policies/LEGACY',
-          '/usr/share/crypto-policies/foo',
-        ],
-      )
 
-      allow(File).to receive(:directory?).with(anything).and_call_original
-      expect(File).to receive(:directory?).with('/usr/share/crypto-policies/DEFAULT').and_return(true)
-      expect(File).to receive(:directory?).with('/usr/share/crypto-policies/LEGACY').and_return(true)
-      expect(File).to receive(:directory?).with('/usr/share/crypto-policies/foo').and_return(false)
+      allow(Dir).to receive(:glob).with(anything).and_call_original
+      expect(Dir).to receive(:glob).with('/usr/share/crypto-policies/policies/*.pol').and_return(
+        [
+          '/usr/share/crypto-policies/policies/DEFAULT.pol',
+          '/usr/share/crypto-policies/policies/LEGACY.pol',
+          '/usr/share/crypto-policies/policies/foo',
+        ]
+      )
     end
 
     context 'when applied' do
@@ -66,7 +62,7 @@ describe 'crypto_policy__state' do
     end
   end
 
-  context 'with a non-functionsl update-crypto-policies command' do
+  context 'with a non-functional update-crypto-policies command' do
     it 'returns a nil value' do
       expect(Facter::Core::Execution).to receive(:execute).with('update-crypto-policies --no-reload --show', on_fail: false).and_return(false)
 
