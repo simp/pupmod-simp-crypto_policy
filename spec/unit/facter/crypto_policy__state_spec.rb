@@ -22,8 +22,7 @@ describe 'crypto_policy__state' do
       expect(Dir).to receive(:glob).with('/usr/share/crypto-policies/policies/*.pol').and_return(
         [
           '/usr/share/crypto-policies/policies/DEFAULT.pol',
-          '/usr/share/crypto-policies/policies/LEGACY.pol',
-          '/usr/share/crypto-policies/policies/foo',
+          '/usr/share/crypto-policies/policies/LEGACY.pol'
         ]
       )
     end
