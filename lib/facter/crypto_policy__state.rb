@@ -36,14 +36,14 @@ Facter.add('crypto_policy__state') do
       system_state['global_policy_applied'] = !Array(output).grep(%r{is applied}).empty? if output
 
       # This is everything past EL8.0
-      global_policies = Dir.glob('/usr/share/crypto-policies/policies/*.pol').map{ |x| File.basename(x, '.pol') }
+      global_policies = Dir.glob('/usr/share/crypto-policies/policies/*.pol')
 
       # Fallback for 8.0
       if global_policies.empty?
         global_policies = Dir.glob('/usr/share/crypto-policies/*').select{|x| File.directory?(x)}
       end
 
-      system_state['global_policies_available'] = global_policies
+      system_state['global_policies_available'] = global_policies.map{|x| File.basename(x, '.pol')}
     end
 
     system_state
