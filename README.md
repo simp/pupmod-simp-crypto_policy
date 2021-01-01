@@ -11,6 +11,7 @@
 <!-- vim-markdown-toc GFM -->
 
 * [Description](#description)
+* [> system inaccessible.](#-system-inaccessible)
 * [Setup](#setup)
   * [What crypto_policy affects](#what-crypto_policy-affects)
 * [Usage](#usage)
@@ -25,6 +26,12 @@
 Manage, and provide information about, the system-wide crypto policies.
 
 See `update-crypto-policy(8)` for additional information.
+
+----------------------------------------------------------------------------
+> **WARNING**
+> There are issues with `crypto-policies < 20190000` which may render a FIPS
+> system inaccessible.
+----------------------------------------------------------------------------
 
 ## Setup
 
