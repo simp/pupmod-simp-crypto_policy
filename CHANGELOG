@@ -1,5 +1,6 @@
 * Thu Dec 24 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.3-0
-- Add support for Puppet 8
+- Ensure that the crypto-policy version is at a non-fatal bug level
+- Add support for Puppet 7
 - Fixed error string in main class
 
 * Tue Oct 20 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.2-0
