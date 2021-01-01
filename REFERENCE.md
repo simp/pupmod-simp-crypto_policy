@@ -82,7 +82,7 @@ The 'ensure' parameter for `$packages`
 * NOTE: There are issues with `crypto-policies < 20190000` which may render
   a FIPS system inaccessible.
 
-Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => '>20190000' })`
+Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })`
 
 ### `crypto_policy::update`
 

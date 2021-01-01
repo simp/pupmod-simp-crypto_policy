@@ -13,7 +13,7 @@
 #
 class crypto_policy::install (
   Array[String[1]] $packages       = ['crypto-policies'],
-  String[1]        $package_ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => '>20190000' })
+  String[1]        $package_ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })
 ) {
   assert_private()
 
