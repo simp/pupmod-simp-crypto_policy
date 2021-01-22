@@ -7,7 +7,7 @@ describe 'crypto_policy' do
     let(:fips_enabled) { false }
     let(:facts) do
       os_facts.merge(
-        crypto_policy__state: {
+        simplib__crypto_policy_state: {
           'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE']
         },
         fips_enabled: fips_enabled,

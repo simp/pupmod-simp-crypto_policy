@@ -11,13 +11,13 @@
 class crypto_policy::update (
   Stdlib::Absolutepath $command = '/usr/bin/update-crypto-policies'
 ) {
-  if $facts['crypto_policy__state'] {
+  if $facts['simplib__crypto_policy_state'] {
     exec { 'update global crypto policy':
       command     => $command,
       refreshonly => true
     }
   }
   else {
-    warning("${module_name}: crypto_policy__state fact not found, updating not enabled")
+    warning("${module_name}: simplib__crypto_policy_state fact not found, updating not enabled")
   }
 }

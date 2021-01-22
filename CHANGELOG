@@ -1,3 +1,6 @@
+* Thu Jan 21 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.5
+- Move the crypto_policy__state fact into simplib for use by other modules
+
 * Fri Jan 01 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.4-0
 - Fix support for puppet 5
 

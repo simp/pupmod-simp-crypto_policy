@@ -28,8 +28,8 @@ describe 'crypto_policy class' do
         apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'has a valid crypto_policy__state fact' do
-        crypto_policy_state = pfact_on(host, 'crypto_policy__state')
+      it 'has a valid simplib__crypto_policy_state fact' do
+        crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
 
         expect(crypto_policy_state).not_to be_empty
         expect(crypto_policy_state['global_policy']).to eq default_policy
@@ -56,7 +56,7 @@ describe 'crypto_policy class' do
 
       if pfact_on(host, 'fips_enabled')
         it 'has the global policy set to FIPS' do
-          crypto_policy_state = pfact_on(host, 'crypto_policy__state')
+          crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
 
           expect(crypto_policy_state).not_to be_empty
           expect(crypto_policy_state['global_policy']).to eq 'FIPS'
@@ -64,7 +64,7 @@ describe 'crypto_policy class' do
         end
       else
         it 'has the global policy set to LEGACY' do
-          crypto_policy_state = pfact_on(host, 'crypto_policy__state')
+          crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
 
           expect(crypto_policy_state).not_to be_empty
           expect(crypto_policy_state['global_policy']).to eq hieradata['crypto_policy::ensure']

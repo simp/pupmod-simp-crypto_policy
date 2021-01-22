@@ -3,7 +3,7 @@
 # @param ensure
 #   The system crypto policy that you wish to enforce
 #
-#   * Will be checked against `$facts['crypto_policy__state']['global_policies_available']` for validity
+#   * Will be checked against `$facts['simplib__crypto_policy_state']['global_policies_available']` for validity
 #
 # @param validate_policy
 #   Disables validation of the `$ensure` parameter prior to application
@@ -49,8 +49,8 @@ class crypto_policy (
   }
 
   if $_ensure {
-    unless $facts["${module_name}__state"] and ($_ensure in $facts["${module_name}__state"]['global_policies_available']) {
-      $_available_policies = join($facts['crypto_policy__state']['global_policies_available'],"', '")
+    unless $facts['simplib__crypto_policy_state'] and ($_ensure in $facts['simplib__crypto_policy_state']['global_policies_available']) {
+      $_available_policies = join($facts['simplib__crypto_policy_state']['global_policies_available'],"', '")
 
       fail("${module_name}:ensure must be one of '${_available_policies}'")
     }
