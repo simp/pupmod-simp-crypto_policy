@@ -56,7 +56,7 @@ describe 'crypto_policy class' do
 
       if pfact_on(host, 'fips_enabled')
         it 'has the global policy set to FIPS' do
-          crypto_policy_state = pfact_on(host, 'simplib__rypto_policy_state')
+          crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
 
           expect(crypto_policy_state).not_to be_empty
           expect(crypto_policy_state['global_policy']).to eq 'FIPS'
