@@ -12,25 +12,30 @@
 
 ## Classes
 
-### `crypto_policy`
+### <a name="crypto_policy"></a>`crypto_policy`
 
 Configure the system crypto policy settings
 
 #### Parameters
 
-The following parameters are available in the `crypto_policy` class.
+The following parameters are available in the `crypto_policy` class:
 
-##### `ensure`
+* [`ensure`](#ensure)
+* [`validate_policy`](#validate_policy)
+* [`force_fips_override`](#force_fips_override)
+* [`manage_installation`](#manage_installation)
+
+##### <a name="ensure"></a>`ensure`
 
 Data type: `Optional[String]`
 
 The system crypto policy that you wish to enforce
 
-* Will be checked against `$facts['crypto_policy__state']['global_policies_available']` for validity
+* Will be checked against `$facts['simplib__crypto_policy_state']['global_policies_available']` for validity
 
 Default value: `simplib::lookup('simp_options::fips', { 'default_value' => pick($facts['fips_enabled'], false) })`
 
-##### `validate_policy`
+##### <a name="validate_policy"></a>`validate_policy`
 
 Data type: `Boolean`
 
@@ -38,7 +43,7 @@ Disables validation of the `$ensure` parameter prior to application
 
 Default value: ``true``
 
-##### `force_fips_override`
+##### <a name="force_fips_override"></a>`force_fips_override`
 
 Data type: `Boolean`
 
@@ -49,7 +54,7 @@ specified by `$ensure` even if the system is in FIPS mode
 
 Default value: ``false``
 
-##### `manage_installation`
+##### <a name="manage_installation"></a>`manage_installation`
 
 Data type: `Boolean`
 
@@ -57,15 +62,18 @@ Enables management of the system installation via the `crypto_policy::install` c
 
 Default value: ``true``
 
-### `crypto_policy::install`
+### <a name="crypto_policyinstall"></a>`crypto_policy::install`
 
 Manage the installation of the crypto policy package(s)
 
 #### Parameters
 
-The following parameters are available in the `crypto_policy::install` class.
+The following parameters are available in the `crypto_policy::install` class:
 
-##### `packages`
+* [`packages`](#packages)
+* [`package_ensure`](#package_ensure)
+
+##### <a name="packages"></a>`packages`
 
 Data type: `Array[String[1]]`
 
@@ -73,7 +81,7 @@ The list of packages to manage for this capability
 
 Default value: `['crypto-policies']`
 
-##### `package_ensure`
+##### <a name="package_ensure"></a>`package_ensure`
 
 Data type: `String[1]`
 
@@ -84,16 +92,18 @@ The 'ensure' parameter for `$packages`
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })`
 
-### `crypto_policy::update`
+### <a name="crypto_policyupdate"></a>`crypto_policy::update`
 
 This is deliberately not kept private in case other classes need to trigger
 an update but do not wish to include full management
 
 #### Parameters
 
-The following parameters are available in the `crypto_policy::update` class.
+The following parameters are available in the `crypto_policy::update` class:
 
-##### `command`
+* [`command`](#command)
+
+##### <a name="command"></a>`command`
 
 Data type: `Stdlib::Absolutepath`
 
