@@ -308,7 +308,7 @@ releng_checks:
     - 'bundle exec rake pkg:compare_latest_tag'
     - 'bundle exec rake pkg:create_tag_changelog'
     - 'bundle exec env | grep ^PATH'
-      ###    - 'bundle exec pdk build --force --target-dir=dist'
+    - 'bundle exec pdk build --force --target-dir=dist'
 
 
 # Linting
