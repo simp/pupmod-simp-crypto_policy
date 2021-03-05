@@ -319,84 +319,84 @@ releng_checks:
 #       doesn't use the Puppet gem at all.  Running multiple lint tests against
 #       different Puppet versions won't accomplish anything.
 
-### pup-lint:
-###   <<: *pup_6_x
-###   <<: *lint_tests
-###
-### # Unit Tests
-### #-----------------------------------------------------------------------
-###
-### pup5.x-unit:
-###   <<: *pup_5_x
-###   <<: *unit_tests
-###   <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
-###
-### pup5.pe-unit:
-###   <<: *pup_5_pe
-###   <<: *unit_tests
-###
-### pup6.x-unit:
-###   <<: *pup_6_x
-###   <<: *unit_tests
-###   <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
-###
-### pup6.pe-unit:
-###   <<: *pup_6_pe
-###   <<: *unit_tests
-###
-### pup7.x-unit:
-###   <<: *pup_7_x
-###   <<: *unit_tests
-###
-### # ------------------------------------------------------------------------------
-### #             NOTICE: **This file is maintained with puppetsync**
-### #
-### # Everything above the "Repo-specific content" comment will be overwritten by
-### # the next puppetsync.
-### # ------------------------------------------------------------------------------
-###
-### # Repo-specific content
-### # ==============================================================================
-###
-### pup5.x:
-###   <<: *pup_5_x
-###   <<: *acceptance_base
-###   script:
-###     - 'bundle exec rake beaker:suites[default]'
-###
-### pup6.x:
-###   <<: *pup_6_x
-###   <<: *acceptance_base
-###   script:
-###     - 'bundle exec rake beaker:suites[default]'
-###
-### pup6.pe:
-###   <<: *pup_6_pe
-###   <<: *acceptance_base
-###   script:
-###     - 'bundle exec rake beaker:suites[default]'
-###
-### pup6.pe-fips:
-###   <<: *pup_6_pe
-###   <<: *acceptance_base
-###   script:
-###     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
-###
-### pup6.pe-oel:
-###   <<: *pup_6_pe
-###   <<: *acceptance_base
-###   script:
-###     - 'bundle exec rake beaker:suites[default,oel]'
-###
-### pup6.pe-oel-fips:
-###   <<: *pup_6_pe
-###   <<: *acceptance_base
-###   <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
-###   script:
-###     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'
-###
-### pup7.x:
-###   <<: *pup_7_x
-###   <<: *acceptance_base
-###   script:
-###     - 'bundle exec rake beaker:suites[default]'
+pup-lint:
+  <<: *pup_6_x
+  <<: *lint_tests
+
+# Unit Tests
+#-----------------------------------------------------------------------
+
+pup5.x-unit:
+  <<: *pup_5_x
+  <<: *unit_tests
+  <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
+
+pup5.pe-unit:
+  <<: *pup_5_pe
+  <<: *unit_tests
+
+pup6.x-unit:
+  <<: *pup_6_x
+  <<: *unit_tests
+  <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
+
+pup6.pe-unit:
+  <<: *pup_6_pe
+  <<: *unit_tests
+
+pup7.x-unit:
+  <<: *pup_7_x
+  <<: *unit_tests
+
+# ------------------------------------------------------------------------------
+#             NOTICE: **This file is maintained with puppetsync**
+#
+# Everything above the "Repo-specific content" comment will be overwritten by
+# the next puppetsync.
+# ------------------------------------------------------------------------------
+
+# Repo-specific content
+# ==============================================================================
+
+pup5.x:
+  <<: *pup_5_x
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default]'
+
+pup6.x:
+  <<: *pup_6_x
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default]'
+
+pup6.pe:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default]'
+
+pup6.pe-fips:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  script:
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
+
+pup6.pe-oel:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default,oel]'
+
+pup6.pe-oel-fips:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
+  script:
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'
+
+pup7.x:
+  <<: *pup_7_x
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default]'
