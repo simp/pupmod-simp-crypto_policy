@@ -296,10 +296,10 @@ variables:
 #=======================================================================
 
 releng_checks:
-  <<: *pup_5_x
+  <<: *pup_6_x
   <<: *setup_bundler_env
   stage: 'validation'
-  tags: ['docker']
+  tags: ['docker', 'shared']
   script:
     - 'command -v rpm || if command -v apt-get; then apt-get update; apt-get install -y rpm; fi ||:'
     - 'bundle exec rake check:dot_underscore'
@@ -307,7 +307,9 @@ releng_checks:
     - 'bundle exec rake pkg:check_version'
     - 'bundle exec rake pkg:compare_latest_tag'
     - 'bundle exec rake pkg:create_tag_changelog'
-    - 'bundle exec puppet module build'
+    - 'bundle exec env | grep ^PATH'
+    - 'bundle exec pdk build --force --target-dir=dist'
+
 
 # Linting
 #-----------------------------------------------------------------------

@@ -1,5 +1,5 @@
+.*.sw?
 .git/
-.*.sw[op]
 .metadata
 .yardoc
 .yardwarns
@@ -15,10 +15,10 @@
 /junit/
 /log/
 /pkg/
-/spec/fixtures/manifests/
-/spec/fixtures/modules/
+/dist/
 /tmp/
 /vendor/
+/.vendor/
 /convert_report.txt
 /update_report.txt
 .DS_Store
@@ -30,8 +30,12 @@
 /Gemfile
 /.gitattributes
 /.gitignore
+/.github/
 /.gitlab-ci.yml
 /.pdkignore
+/.puppet-lint.rc
+/.sync.yml
+/.pmtignore
 /Rakefile
 /rakelib/
 /.rspec
@@ -40,3 +44,4 @@
 /.yardopts
 /spec/
 /.vscode/
+/tests/
