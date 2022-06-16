@@ -52,7 +52,13 @@ class crypto_policy (
     unless $facts['simplib__crypto_policy_state'] and ($_ensure in $facts['simplib__crypto_policy_state']['global_policies_available']) {
       $_available_policies = join($facts['simplib__crypto_policy_state']['global_policies_available'],"', '")
 
-      fail("${module_name}:ensure must be one of '${_available_policies}'")
+      if $ensure == $_ensure {
+        $ensure_message = "${ensure}"
+      } else {
+        $ensure_message = "${ensure}, overridden to ${_ensure}"
+      }
+
+      fail("${module_name}::ensure (${ensure_message}) must be one of '${_available_policies}'")
     }
 
     $_crypto_config = @("CRYPTO_CONFIG")
