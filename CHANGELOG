@@ -1,3 +1,6 @@
+* Thu Jun 16 2022 Steven Pritchard <steve@sicura.us> - 0.2.1
+- Improve the ensure validation error message output
+
 * Tue Jun 15 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 0.2.0
 - Removed support for Puppet 5
 - Ensured support for Puppet 7 in requirements and stdlib
