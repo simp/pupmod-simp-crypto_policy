@@ -1,6 +1,6 @@
 {
   "name": "simp-crypto_policy",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "SIMP Team",
   "summary": "Manage, and provide information about, the system-wide crypto policies",
   "license": "Apache-2.0",

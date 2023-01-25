@@ -1,3 +1,7 @@
+* Wed Jan 25 2023 Steven Pritchard <steve@sicura.us> - 0.2.2
+- Handle empty simplib__crypto_policy_state fact (#28)
+- Also manage crypto-policies-scripts package
+
 * Thu Jun 16 2022 Steven Pritchard <steve@sicura.us> - 0.2.1
 - Improve the ensure validation error message output
 
