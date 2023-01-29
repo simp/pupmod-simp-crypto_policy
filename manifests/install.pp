@@ -12,7 +12,7 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy::install (
-  Array[String[1]] $packages       = ['crypto-policies'],
+  Array[String[1]] $packages       = ['crypto-policies', 'crypto-policies-scripts'],
   String[1]        $package_ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })
 ) {
   assert_private()

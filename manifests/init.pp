@@ -48,9 +48,11 @@ class crypto_policy (
     $_ensure = $ensure
   }
 
-  if $_ensure {
-    unless $facts['simplib__crypto_policy_state'] and ($_ensure in $facts['simplib__crypto_policy_state']['global_policies_available']) {
-      $_available_policies = join($facts['simplib__crypto_policy_state']['global_policies_available'],"', '")
+  $global_policies_available = $facts.dig('simplib__crypto_policy_state', 'global_policies_available')
+
+  if $_ensure and $global_policies_available {
+    unless $_ensure in $global_policies_available {
+      $_available_policies = join($global_policies_available,"', '")
 
       if $ensure == $_ensure {
         $ensure_message = "${ensure}"
