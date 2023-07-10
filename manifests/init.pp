@@ -55,7 +55,7 @@ class crypto_policy (
       $_available_policies = join($global_policies_available,"', '")
 
       if $ensure == $_ensure {
-        $ensure_message = "${ensure}"
+        $ensure_message = $ensure
       } else {
         $ensure_message = "${ensure}, overridden to ${_ensure}"
       }
@@ -66,7 +66,7 @@ class crypto_policy (
     $_crypto_config = @("CRYPTO_CONFIG")
       # This file managed by Puppet using ${module_name}
       #
-      $_ensure
+      ${_ensure}
       | CRYPTO_CONFIG
 
     file { '/etc/crypto-policies/config':
