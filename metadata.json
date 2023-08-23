@@ -1,6 +1,6 @@
 {
   "name": "simp-crypto_policy",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "SIMP Team",
   "summary": "Manage, and provide information about, the system-wide crypto policies",
   "license": "Apache-2.0",
@@ -45,6 +45,12 @@
     },
     {
       "operatingsystem": "Rocky",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "AlmaLinux",
       "operatingsystemrelease": [
         "8"
       ]
