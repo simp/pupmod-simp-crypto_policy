@@ -1,6 +1,6 @@
 {
   "name": "simp-crypto_policy",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "author": "SIMP Team",
   "summary": "Manage, and provide information about, the system-wide crypto policies",
   "license": "Apache-2.0",
@@ -28,7 +28,6 @@
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "8",
         "9"
       ]
     },
