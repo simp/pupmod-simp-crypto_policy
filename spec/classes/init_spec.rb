@@ -33,14 +33,14 @@ describe 'crypto_policy' do
         context 'with ensure set to DEFAULT' do
           let(:params) do
             {
-              ensure: 'DEFAULT'
+              ensure: 'DEFAULT',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
 
           it {
-            expect(subject).to create_file('/etc/crypto-policies/config').with_content(
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
                 # This file managed by Puppet using crypto_policy
                 #
@@ -56,7 +56,7 @@ describe 'crypto_policy' do
           let(:fips_enabled) { true }
 
           it {
-            expect(subject).to create_file('/etc/crypto-policies/config').with_content(
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
                 # This file managed by Puppet using crypto_policy
                 #
@@ -78,7 +78,7 @@ describe 'crypto_policy' do
             end
 
             it {
-              expect(subject).to create_file('/etc/crypto-policies/config').with_content(
+              is_expected.to create_file('/etc/crypto-policies/config').with_content(
                 <<~CONTENT,
                   # This file managed by Puppet using crypto_policy
                   #
@@ -92,7 +92,7 @@ describe 'crypto_policy' do
     end
 
     context "on #{os} without required facts" do
-      let(:facts) { os_facts.reject { |k, v| k == :simplib__crypto_policy_state } }
+      let(:facts) { os_facts.reject { |k, _v| k == :simplib__crypto_policy_state } }
       let(:params) { { ensure: 'DEFAULT' } }
 
       it { is_expected.to compile.with_all_deps }
