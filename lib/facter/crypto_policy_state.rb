@@ -48,7 +48,7 @@ Facter.add('crypto_policy_state') do
       end
 
       system_state['global_policies_available'] = global_policies.map { |x| File.basename(x, '.pol') }.uniq
-      system_state['sub_policies_available'] = sub_policies.map {|x| File.basename(x, '.pmod') }.uniq
+      system_state['sub_policies_available'] = sub_policies.map { |x| File.basename(x, '.pmod') }.uniq
     end
 
     system_state
