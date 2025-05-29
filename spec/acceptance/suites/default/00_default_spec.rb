@@ -28,17 +28,18 @@ describe 'crypto_policy class' do
         apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'has a valid simplib__crypto_policy_state fact' do
-        crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
+      it 'has a valid crypto_policy_state fact' do
+        crypto_policy_state = pfact_on(host, 'crypto_policy_state')
 
         expect(crypto_policy_state).not_to be_empty
         expect(crypto_policy_state['global_policy']).to eq default_policy
         expect(crypto_policy_state['global_policy_applied']).to eq true
         expect(crypto_policy_state['global_policies_available']).to include('DEFAULT', 'EMPTY', 'FIPS', 'FUTURE', 'LEGACY')
+        expect(crypto_policy_state['sub_policies_available']).to include('AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP')
       end
     end
 
-    context 'when setting the config' do
+    context 'when setting the config to a global policy' do
       let(:hieradata) do
         {
           'crypto_policy::ensure' => 'LEGACY'
@@ -56,7 +57,7 @@ describe 'crypto_policy class' do
 
       if pfact_on(host, 'fips_enabled')
         it 'has the global policy set to FIPS' do
-          crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
+          crypto_policy_state = pfact_on(host, 'crypto_policy_state')
 
           expect(crypto_policy_state).not_to be_empty
           expect(crypto_policy_state['global_policy']).to eq 'FIPS'
@@ -64,12 +65,38 @@ describe 'crypto_policy class' do
         end
       else
         it 'has the global policy set to LEGACY' do
-          crypto_policy_state = pfact_on(host, 'simplib__crypto_policy_state')
+          crypto_policy_state = pfact_on(host, 'crypto_policy_state')
 
           expect(crypto_policy_state).not_to be_empty
           expect(crypto_policy_state['global_policy']).to eq hieradata['crypto_policy::ensure']
           expect(crypto_policy_state['global_policy_applied']).to eq true
         end
+      end
+    end
+
+    context 'when setting the config with a subpolicy' do
+      let(:hieradata) do
+        {
+          'crypto_policy::ensure' => 'DEFAULT:NO-SHA1',
+          'force_fips_override'   => true
+        }
+      end
+
+      it 'works without error' do
+        set_hieradata_on(host, hieradata)
+        apply_manifest_on(host, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
+      end
+
+      it 'has the global policy set to DEFAULT:NO-SHA1' do
+        crypto_policy_state = pfact_on(host, 'crypto_policy_state')
+
+        expect(crypto_policy_state).not_to be_empty
+        expect(crypto_policy_state['global_policy']).to eq hieradata['crypto_policy::ensure']
+        expect(crypto_policy_state['global_policy_applied']).to eq true
       end
     end
   end

@@ -8,8 +8,9 @@ describe 'crypto_policy' do
       let(:fips_enabled) { false }
       let(:facts) do
         os_facts.merge(
-          simplib__crypto_policy_state: {
-            'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE']
+          crypto_policy_state: {
+            'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE'],
+            'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP']
           },
           fips_enabled: fips_enabled,
         )
@@ -52,6 +53,80 @@ describe 'crypto_policy' do
           it { is_expected.to create_exec('update global crypto policy') }
         end
 
+        context 'with ensure set to DEFAULT:NO-SHA1:OSPP' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT:NO-SHA1:OSPP',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                # This file managed by Puppet using crypto_policy
+                #
+                DEFAULT:NO-SHA1:OSPP
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+
+          it { is_expected.to create_exec('update global crypto policy') }
+        end
+
+        context 'with ensure set to DEFAULT:NO-SHA1' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT:NO-SHA1',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                # This file managed by Puppet using crypto_policy
+                #
+                DEFAULT:NO-SHA1
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+
+          it { is_expected.to create_exec('update global crypto policy') }
+        end
+
+        context 'with ensure set to non-existent global policy' do
+          let(:params) do
+            {
+              ensure: 'FAKE',
+            }
+          end
+
+          it { is_expected.not_to compile }
+        end
+
+        context 'with ensure set to non-existent subpolicy' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT:FAKE',
+            }
+          end
+
+          it { is_expected.not_to compile }
+        end
+
+        context 'with ensure set to real and non-existent subpolicy' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT:NO-SHA1:FAKE',
+            }
+          end
+
+          it { is_expected.not_to compile }
+        end
+
         context 'with the system in FIPS mode' do
           let(:fips_enabled) { true }
 
@@ -92,7 +167,7 @@ describe 'crypto_policy' do
     end
 
     context "on #{os} without required facts" do
-      let(:facts) { os_facts.reject { |k, _v| k == :simplib__crypto_policy_state } }
+      let(:facts) { os_facts.reject { |k, _v| k == :crypto_policy_state } }
       let(:params) { { ensure: 'DEFAULT' } }
 
       it { is_expected.to compile.with_all_deps }

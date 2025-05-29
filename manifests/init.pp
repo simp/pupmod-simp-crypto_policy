@@ -1,9 +1,10 @@
 # @summary Configure the system crypto policy settings
 #
 # @param ensure
-#   The system crypto policy that you wish to enforce
+#   The system crypto policy and subpolicies that you wish to enforce
 #
-#   * Will be checked against `$facts['simplib__crypto_policy_state']['global_policies_available']` for validity
+#   * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
+#     and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 #
 # @param validate_policy
 #   Disables validation of the `$ensure` parameter prior to application
@@ -20,7 +21,7 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy (
-  Optional[String] $ensure              = simplib::lookup('simp_options::fips', { 'default_value' => pick($facts['fips_enabled'], false) }) ? { true => 'FIPS', default => undef },
+  Optional[String] $ensure              = pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef },
   Boolean          $validate_policy     = true,
   Boolean          $force_fips_override = false,
   Boolean          $manage_installation = true
@@ -48,10 +49,14 @@ class crypto_policy (
     $_ensure = $ensure
   }
 
-  $global_policies_available = $facts.dig('simplib__crypto_policy_state', 'global_policies_available')
+  $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available')
+  $sub_policies_available = $facts.dig('crypto_policy_state', 'sub_policies_available')
 
-  if $_ensure and $global_policies_available {
-    unless $_ensure in $global_policies_available {
+  if $_ensure and $global_policies_available and $sub_policies_available {
+    $_policy_components = $_ensure.split(':')
+    $_global_policy = $_policy_components[0]
+    $_sub_policies = $_policy_components.delete($_policy_components[0])
+    unless $_global_policy in $global_policies_available {
       $_available_policies = join($global_policies_available,"', '")
 
       if $ensure == $_ensure {
@@ -61,6 +66,13 @@ class crypto_policy (
       }
 
       fail("${module_name}::ensure (${ensure_message}) must be one of '${_available_policies}'")
+    }
+
+    unless $_sub_policies.empty or ($_sub_policies - $sub_policies_available).empty {
+      $_available_sub_policies = join($sub_policies_available, "', '")
+      # Any sub policies not available to use will be displayed back to the user
+      $_unknown_sub_policies = join(($_sub_policies - $sub_policies_available), "', '")
+      fail("${module_name}::ensure unknown sub_policies (${$_unknown_sub_policies}) must be one of '${_available_sub_policies}'")
     }
 
     $_crypto_config = @("CRYPTO_CONFIG")
