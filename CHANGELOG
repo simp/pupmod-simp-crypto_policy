@@ -1,3 +1,8 @@
+* Thu May 08 2025 Richard Gardner <rick@sicura-us> - 1.0.0
+- Remove EOL OS's support (EL7, CentOS8)
+- Stardardize beaker nodesets
+- beaker test improvements
+
 * Mon Oct 23 2023 Steven Pritchard <steve@sicura.us> - 0.6.0
 - [puppetsync] Add EL9 support
 
