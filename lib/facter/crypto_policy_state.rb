@@ -16,7 +16,7 @@
 #   }
 #
 Facter.add('crypto_policy_state') do
-  confine kernel: 'Linux'
+  confine kernel: :linux
 
   crypto_policy_cmd = Facter::Util::Resolution.which('update-crypto-policies')
   confine { crypto_policy_cmd }
@@ -52,5 +52,8 @@ Facter.add('crypto_policy_state') do
     end
 
     system_state
+  rescue => e
+    Facter.warn("Failed to retrieve crypto policy state: #{e.message}")
+    nil
   end
 end
