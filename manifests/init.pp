@@ -26,8 +26,6 @@ class crypto_policy (
   Boolean          $force_fips_override = false,
   Boolean          $manage_installation = true
 ) {
-  simplib::assert_metadata($module_name)
-
   include crypto_policy::update
 
   if $manage_installation {

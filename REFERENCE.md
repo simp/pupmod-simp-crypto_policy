@@ -29,11 +29,12 @@ The following parameters are available in the `crypto_policy` class:
 
 Data type: `Optional[String]`
 
-The system crypto policy that you wish to enforce
+The system crypto policy and subpolicies that you wish to enforce
 
-* Will be checked against `$facts['simplib__crypto_policy_state']['global_policies_available']` for validity
+* Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
+  and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 
-Default value: `simplib::lookup('simp_options::fips', { 'default_value' => pick($facts['fips_enabled'], false) }) ? { true => 'FIPS', default => undef`
+Default value: `pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef`
 
 ##### <a name="-crypto_policy--validate_policy"></a>`validate_policy`
 
@@ -90,7 +91,7 @@ The 'ensure' parameter for `$packages`
 * NOTE: There are issues with `crypto-policies < 20190000` which may render
   a FIPS system inaccessible.
 
-Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })`
+Default value: `'latest'`
 
 ### <a name="crypto_policy--update"></a>`crypto_policy::update`
 
