@@ -156,10 +156,6 @@ jobs:
       - name: bundle install
         run: |
           bundle install
-      - name: install podman
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
       - name: Setup podman
         run: |
           systemctl start --user podman.socket
