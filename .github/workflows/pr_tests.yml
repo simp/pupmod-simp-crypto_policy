@@ -12,7 +12,7 @@
 # ------------------------------------------------------------------------------
 # Release       Puppet   Ruby    EOL
 # PE 2019.8     6.22     2.5     2022-12 (LTS)
-# PE 2021.Y     7.x      3.2     Quarterly updates
+# PE 2021.Y     7.x      2.7     Quarterly updates
 #
 # https://puppet.com/docs/pe/latest/component_versions_in_recent_pe_releases.html
 # https://puppet.com/misc/puppet-enterprise-lifecycle
@@ -110,7 +110,7 @@ jobs:
         puppet:
           - label: 'Puppet 7.x [SIMP 6.6/PE 2021.7]'
             puppet_version: '~> 7.0'
-            ruby_version: '3.2'
+            ruby_version: '2.7'
             experimental: false
           - label: 'Puppet 8.x'
             puppet_version: '~> 8.0'
@@ -148,15 +148,14 @@ jobs:
       fail-fast: false
     steps:
       - name: checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: setup ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
-      - name: install bundler
+      - name: bundle install
         run: |
-          gem install bundler
-          bundle update
+          bundle install
       - name: install podman
         run: |
           sudo apt-get update
