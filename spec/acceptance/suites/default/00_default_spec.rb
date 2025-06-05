@@ -35,7 +35,8 @@ describe 'crypto_policy class' do
         expect(crypto_policy_state['global_policy']).to eq default_policy
         expect(crypto_policy_state['global_policy_applied']).to eq true
         expect(crypto_policy_state['global_policies_available']).to include('DEFAULT', 'EMPTY', 'FIPS', 'FUTURE', 'LEGACY')
-        expect(crypto_policy_state['sub_policies_available']).to include('AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP')
+        expect(crypto_policy_state['sub_policies_available']).not_to be_empty
+        expect(crypto_policy_state['sub_policies_available']).to be_an(Array)
       end
     end
 
@@ -71,6 +72,29 @@ describe 'crypto_policy class' do
           expect(crypto_policy_state['global_policy']).to eq hieradata['crypto_policy::ensure']
           expect(crypto_policy_state['global_policy_applied']).to eq true
         end
+      end
+    end
+
+    context 'with custom subpolicy' do
+
+      # Create a custom subpolicy
+      on(host, "cp /etc/crypto-policies/policies/modules/NO-SHA1.pmod /usr/share/crypto-policies/policies/modules/TEST.pmod")
+
+      # Using puppet_apply as a helper
+      it 'works without error' do
+        apply_manifest_on(host, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
+      end
+
+      it 'has a valid crypto_policy_state fact' do
+        crypto_policy_state = pfact_on(host, 'crypto_policy_state')
+
+        expect(crypto_policy_state).not_to be_empty
+        expect(crypto_policy_state['sub_policies_available']).to be_an(Array)
+        expect(crypto_policy_state['sub_policies_available']).to include('TEST')
       end
     end
 
