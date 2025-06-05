@@ -76,9 +76,8 @@ describe 'crypto_policy class' do
     end
 
     context 'with custom subpolicy' do
-
       # Create a custom subpolicy
-      on(host, "cp /usr/share/crypto-policies/policies/modules/NO-SHA1.pmod /etc/crypto-policies/policies/modules/TEST.pmod")
+      on(host, 'cp /usr/share/crypto-policies/policies/modules/NO-SHA1.pmod /etc/crypto-policies/policies/modules/TEST.pmod')
 
       # Using puppet_apply as a helper
       it 'works without error' do
