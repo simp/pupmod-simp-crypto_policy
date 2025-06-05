@@ -1,4 +1,9 @@
-* Thu May 29 2025 Mike Riddle <mike@sicura.us> - 1.0.0
+* Thu Jun 05 2025 Mike Riddle <mike@sicura.us> - 1.2.0
+- Added RHEL 10 support
+- Added CentOS 10 support
+- Added AlmaLinux 10 support
+
+* Thu May 29 2025 Mike Riddle <mike@sicura.us> - 1.1.0
 - Removed dependency on simplib
 - Added ability for users to specify subpolicies
 
