@@ -43,7 +43,7 @@ end
 
 group :system_tests do
   gem 'bcrypt_pbkdf'
-  gem 'beaker'
+  gem 'beaker', git: 'https://github.com/voxpupuli/beaker.git', ref: 'master'
   gem 'beaker-rspec'
   gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', ['>= 1.32.1', '< 2'])
 end
