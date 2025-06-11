@@ -12,7 +12,7 @@ unless ENV['BEAKER_provision'] == 'no'
     if host.is_pe?
       install_pe
     else
-      install_puppet
+      install_openvox
     end
   end
 end
