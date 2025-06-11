@@ -45,7 +45,7 @@ group :system_tests do
   gem 'bcrypt_pbkdf'
   gem 'beaker', git: 'https://github.com/voxpupuli/beaker.git', ref: 'master'
   gem 'beaker-rspec'
-  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', ['>= 1.32.1', '< 2'])
+  gem 'simp-beaker-helpers', git: 'https://github.com/michael-riddle/rubygem-simp-beaker-helpers.git', ref: 'issue_229' #ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', ['>= 1.32.1', '< 2'])
 end
 
 # Evaluate extra gemfiles if they exist
