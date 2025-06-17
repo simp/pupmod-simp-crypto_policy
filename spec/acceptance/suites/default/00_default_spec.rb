@@ -77,7 +77,7 @@ describe 'crypto_policy class' do
 
     context 'with custom subpolicy' do
       # Create a custom subpolicy
-      on(host, 'cp /usr/share/crypto-policies/policies/modules/NO-SHA1.pmod /etc/crypto-policies/policies/modules/TEST.pmod')
+      on(host, 'cp /usr/share/crypto-policies/policies/modules/OSPP.pmod /etc/crypto-policies/policies/modules/TEST.pmod')
 
       # Using puppet_apply as a helper
       it 'works without error' do
@@ -100,7 +100,7 @@ describe 'crypto_policy class' do
     context 'when setting the config with a subpolicy' do
       let(:hieradata) do
         {
-          'crypto_policy::ensure' => 'DEFAULT:NO-SHA1',
+          'crypto_policy::ensure' => 'DEFAULT:OSPP',
           'force_fips_override'   => true
         }
       end
@@ -114,7 +114,7 @@ describe 'crypto_policy class' do
         apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'has the global policy set to DEFAULT:NO-SHA1' do
+      it 'has the global policy set to DEFAULT:OSPP' do
         crypto_policy_state = pfact_on(host, 'crypto_policy_state')
 
         expect(crypto_policy_state).not_to be_empty

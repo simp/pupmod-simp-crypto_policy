@@ -9,12 +9,12 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy::update (
-  Stdlib::Absolutepath $command = '/usr/bin/update-crypto-policies'
+  Stdlib::Absolutepath $command = "/usr/bin/update-crypto-policies --set ${crypto_policy::_ensure}", # lint:ignore:variable_scope
 ) {
   if $facts['crypto_policy_state'] {
     exec { 'update global crypto policy':
       command     => $command,
-      refreshonly => true
+      refreshonly => true,
     }
   }
   else {

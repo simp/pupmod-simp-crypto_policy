@@ -1,11 +1,11 @@
 ---
 HOSTS:
-  alma9:
+  centos10:
     roles:
       - client
-    platform: el-9-x86_64
+    platform: el-10-x86_64
     hypervisor: docker
-    image: almalinux:9
+    image: quay.io/centos/centos:stream10
     docker_cmd: '/usr/sbin/init'
     docker_preserve_image: true
     docker_image_commands:
@@ -14,4 +14,4 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: aio
-  puppet_collection: <%= ENV.fetch('BEAKER_PUPPET_COLLECTION', '~') %>
+  puppet_collection: <%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'openvox8') %>

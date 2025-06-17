@@ -26,14 +26,6 @@ class crypto_policy (
   Boolean          $force_fips_override = false,
   Boolean          $manage_installation = true
 ) {
-  include crypto_policy::update
-
-  if $manage_installation {
-    include crypto_policy::install
-
-    Class["${module_name}::install"] -> Class["${module_name}::update"]
-  }
-
   # FIPS systems should always switch to FIPS mode
   if $facts['fips_enabled'] {
     if $force_fips_override {
@@ -45,6 +37,14 @@ class crypto_policy (
   }
   else {
     $_ensure = $ensure
+  }
+
+  include crypto_policy::update
+
+  if $manage_installation {
+    include crypto_policy::install
+
+    Class["${module_name}::install"] -> Class["${module_name}::update"]
   }
 
   $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available')
@@ -73,18 +73,20 @@ class crypto_policy (
       fail("${module_name}::ensure unknown sub_policies (${$_unknown_sub_policies}) must be one of '${_available_sub_policies}'")
     }
 
+    # We Removed the "Managed by Puppet" content to accomodate el 10 os flavors
     $_crypto_config = @("CRYPTO_CONFIG")
-      # This file managed by Puppet using ${module_name}
-      #
       ${_ensure}
       | CRYPTO_CONFIG
 
+    # This code will now fire off an 'update-crypto-policies --set $crypto-policy::_enable' if the file has changed
+    # There is a bug in the 'update-crytpo-policies' binary in el10 that causes it to not apply the policy specified
+    # in /etc/crypto-policies/config, so you are forced to use the --set command to apply it appropriately.
     file { '/etc/crypto-policies/config':
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
       content => $_crypto_config,
-      notify  => Class["${module_name}::update"]
+      notify  => Class["${module_name}::update"],
     }
   }
 }

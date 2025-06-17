@@ -43,8 +43,6 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
-                # This file managed by Puppet using crypto_policy
-                #
                 DEFAULT
               CONTENT
             ).that_notifies('Class[crypto_policy::update]')
@@ -65,8 +63,6 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
-                # This file managed by Puppet using crypto_policy
-                #
                 DEFAULT:NO-SHA1:OSPP
               CONTENT
             ).that_notifies('Class[crypto_policy::update]')
@@ -87,8 +83,6 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
-                # This file managed by Puppet using crypto_policy
-                #
                 DEFAULT:NO-SHA1
               CONTENT
             ).that_notifies('Class[crypto_policy::update]')
@@ -133,8 +127,6 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/etc/crypto-policies/config').with_content(
               <<~CONTENT,
-                # This file managed by Puppet using crypto_policy
-                #
                 FIPS
               CONTENT
             ).that_notifies('Class[crypto_policy::update]')
@@ -155,8 +147,6 @@ describe 'crypto_policy' do
             it {
               is_expected.to create_file('/etc/crypto-policies/config').with_content(
                 <<~CONTENT,
-                  # This file managed by Puppet using crypto_policy
-                  #
                   DEFAULT
                 CONTENT
               ).that_notifies('Class[crypto_policy::update]')
