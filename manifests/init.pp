@@ -85,7 +85,7 @@ class crypto_policy (
       owner                   => 'root',
       group                   => 'root',
       mode                    => '0644',
-      # The update-crypto-policy command will reset the conext every run, causing flapping without this parameter
+      # The update-crypto-policy command will reset the context every run, causing flapping without this parameter
       selinux_ignore_defaults => true,
       content                 => $_crypto_config,
       notify                  => Class["${module_name}::update"],
