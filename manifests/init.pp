@@ -82,11 +82,13 @@ class crypto_policy (
     # There is a bug in the 'update-crytpo-policies' binary in el10 that causes it to not apply the policy specified
     # in /etc/crypto-policies/config, so you are forced to use the --set command to apply it appropriately.
     file { '/etc/crypto-policies/config':
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => $_crypto_config,
-      notify  => Class["${module_name}::update"],
+      owner                   => 'root',
+      group                   => 'root',
+      mode                    => '0644',
+      # The update-crypto-policy command will reset the context every run, causing flapping without this parameter
+      selinux_ignore_defaults => true,
+      content                 => $_crypto_config,
+      notify                  => Class["${module_name}::update"],
     }
   }
 }
