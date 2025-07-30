@@ -127,7 +127,7 @@ jobs:
       - run: 'bundle exec rake spec'
         continue-on-error: ${{matrix.puppet.experimental}}
 
-  acceptance-docker:
+  acceptance:
     runs-on:
       - ubuntu-latest
     strategy:
@@ -160,34 +160,6 @@ jobs:
         run: |
           systemctl start --user podman.socket
           echo "DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock" >> "$GITHUB_ENV"
-      - name: beaker
-        run: |
-          bundle exec rake beaker:suites[default,${{ matrix.node }}]
-
-  acceptance-vagrant:
-    runs-on:
-      - ubuntu-latest
-    strategy:
-      matrix:
-        node:
-          - alma9
-      fail-fast: false
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v4
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2
-      - name: bundle install
-        run: |
-          bundle install
-      - name: Setup libvirt for Vagrant
-        run: |
-          sudo add-apt-repository ppa:evgeni/vagrant
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends vagrant vagrant-libvirt libvirt-daemon-system libvirt-daemon qemu-system-x86 qemu-utils dnsmasq
-          sudo chmod 666 /var/run/libvirt/libvirt-sock
       - name: beaker
         run: |
           bundle exec rake beaker:suites[default,${{ matrix.node }}]
