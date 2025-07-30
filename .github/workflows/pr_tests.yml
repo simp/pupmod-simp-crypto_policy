@@ -170,7 +170,7 @@ jobs:
     strategy:
       matrix:
         node:
-          - almalinux9
+          - alma9
       fail-fast: false
     steps:
       - name: checkout repo
