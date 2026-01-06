@@ -21,6 +21,8 @@ Configure the system crypto policy settings
 The following parameters are available in the `crypto_policy` class:
 
 * [`ensure`](#-crypto_policy--ensure)
+* [`global_policies_available`](#-crypto_policy--global_policies_available)
+* [`sub_policies_available`](#-crypto_policy--sub_policies_available)
 * [`validate_policy`](#-crypto_policy--validate_policy)
 * [`force_fips_override`](#-crypto_policy--force_fips_override)
 * [`manage_installation`](#-crypto_policy--manage_installation)
@@ -34,7 +36,25 @@ The system crypto policy and subpolicies that you wish to enforce
 * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
   and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 
-Default value: `pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef`
+Default value: `$facts['fips_enabled'] ? { true => 'FIPS', default => undef`
+
+##### <a name="-crypto_policy--global_policies_available"></a>`global_policies_available`
+
+Data type: `Optional[Array]`
+
+The list of global policies available on the system, leave default to
+automatically populate from facts
+
+Default value: `$facts.dig('crypto_policy_state', 'global_policies_available')`
+
+##### <a name="-crypto_policy--sub_policies_available"></a>`sub_policies_available`
+
+Data type: `Optional[Array]`
+
+The list of sub policies available on the system, leave default to
+automatically populate from facts
+
+Default value: `$facts.dig('crypto_policy_state', 'sub_policies_available')`
 
 ##### <a name="-crypto_policy--validate_policy"></a>`validate_policy`
 
@@ -110,5 +130,5 @@ Data type: `Stdlib::Absolutepath`
 
 The path to the command to be executed
 
-Default value: `'/usr/bin/update-crypto-policies'`
+Default value: `"/usr/bin/update-crypto-policies --set ${crypto_policy::_ensure}"`
 
