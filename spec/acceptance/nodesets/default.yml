@@ -11,4 +11,4 @@ CONFIG:
   synced_folder: disabled
   type: aio
   vagrant_memsize: 256
-  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet8') %>"
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'openvox8') %>"

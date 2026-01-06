@@ -6,6 +6,14 @@
 #   * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
 #     and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 #
+# @param global_policies_available
+#   The list of global policies available on the system, leave default to
+#   automatically populate from facts
+#
+# @param sub_policies_available
+#   The list of sub policies available on the system, leave default to
+#   automatically populate from facts
+#
 # @param validate_policy
 #   Disables validation of the `$ensure` parameter prior to application
 #
@@ -21,10 +29,12 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy (
-  Optional[String] $ensure              = pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef },
-  Boolean          $validate_policy     = true,
-  Boolean          $force_fips_override = false,
-  Boolean          $manage_installation = true
+  Optional[String] $ensure                    = pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef },
+  Array            $global_policies_available = pick($facts.dig('crypto_policy_state', 'global_policies_available'), default => undef),
+  Array            $sub_policies_available    = pick($facts.dig('crypto_policy_state', 'sub_policies_available'), default => undef),
+  Boolean          $validate_policy           = true,
+  Boolean          $force_fips_override       = false,
+  Boolean          $manage_installation       = true
 ) {
   # FIPS systems should always switch to FIPS mode
   if $facts['fips_enabled'] {
@@ -46,9 +56,6 @@ class crypto_policy (
 
     Class["${module_name}::install"] -> Class["${module_name}::update"]
   }
-
-  $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available')
-  $sub_policies_available = $facts.dig('crypto_policy_state', 'sub_policies_available')
 
   if $_ensure and $global_policies_available and $sub_policies_available {
     $_policy_components = $_ensure.split(':')

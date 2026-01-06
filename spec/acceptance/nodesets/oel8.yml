@@ -4,7 +4,7 @@ HOSTS:
     platform: el-8-x86_64
     box: generic/oracle8
     hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
-    family: sicura-image-build/oracle-linux-8
+    family: oracle-linux-cloud/oracle-linux-8
     gce_machine_type: n1-standard-2
 CONFIG:
   log_level: verbose
