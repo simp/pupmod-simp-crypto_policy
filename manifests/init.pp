@@ -29,12 +29,12 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy (
-  Optional[String] $ensure                    = pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef },
-  Array            $global_policies_available = pick($facts.dig('crypto_policy_state', 'global_policies_available'), default => undef),
-  Array            $sub_policies_available    = pick($facts.dig('crypto_policy_state', 'sub_policies_available'), default => undef),
-  Boolean          $validate_policy           = true,
-  Boolean          $force_fips_override       = false,
-  Boolean          $manage_installation       = true
+  Optional[String]  $ensure                    = $facts['fips_enabled'] ? { true => 'FIPS', default => undef },
+  Optional[Array]   $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available'),
+  Optional[Array]   $sub_policies_available    = $facts.dig('crypto_policy_state', 'sub_policies_available'),
+  Boolean           $validate_policy           = true,
+  Boolean           $force_fips_override       = false,
+  Boolean           $manage_installation       = true
 ) {
   # FIPS systems should always switch to FIPS mode
   if $facts['fips_enabled'] {
