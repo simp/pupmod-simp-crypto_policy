@@ -59,14 +59,14 @@ Default value: `$facts['fips_enabled'] ? { true => 'FIPS', default => undef`
 
 ##### <a name="-crypto_policy--custom_subpolicies"></a>`custom_subpolicies`
 
-Data type: `Optional[Hash]`
+Data type: `Hash`
 
 A hash of custom subpolicy names to content that will be created in
 `/usr/share/crypto-policies/policies/modules/` prior to applying the
 selected policy. This allows users to create and apply their own
 subpolicies.
 
-Default value: `undef`
+Default value: `{}`
 
 ##### <a name="-crypto_policy--validate_policy"></a>`validate_policy`
 
