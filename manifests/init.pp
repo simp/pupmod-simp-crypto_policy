@@ -35,7 +35,7 @@
 #
 class crypto_policy (
   Optional[String]  $ensure                    = $facts['fips_enabled'] ? { true => 'FIPS', default => undef },
-  Optional[Hash]    $custom_subpolicies        = undef,
+  Hash              $custom_subpolicies        = {},
   Boolean           $validate_policy           = true,
   Boolean           $force_fips_override       = false,
   Boolean           $manage_installation       = true
@@ -61,12 +61,10 @@ class crypto_policy (
     Class["${module_name}::install"] -> Class["${module_name}::update"]
   }
 
-  if $custom_subpolicies {
-    $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
-      crypto_policy::subpolicy { $subpolicy_name:
-        ensure  => $subpolicy_params.get('ensure', true),
-        content => $subpolicy_params['content'],
-      }
+  $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
+    crypto_policy::subpolicy { $subpolicy_name:
+      ensure  => $subpolicy_params.get('ensure', true),
+      content => $subpolicy_params['content'],
     }
   }
 
@@ -81,11 +79,7 @@ class crypto_policy (
   }
 
   $sub_policies_available = unique(
-    $existing_sub_policies_clean +
-    ($custom_subpolicies ? {
-        Hash    => $custom_subpolicies.keys,
-        default => [],
-    })
+    $existing_sub_policies_clean + $custom_subpolicies.keys
   )
 
   if $_ensure and $global_policies_available and $sub_policies_available {
