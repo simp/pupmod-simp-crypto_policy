@@ -1,3 +1,6 @@
+* Tue Jan 06 2026 Mike Riddle <mike@sicura.us> - 1.0.3
+- Allow users to specify managed subpolicies via hiera
+
 * Wed Jul 30 2025 Mike Riddle <mike@sicura.us> - 1.0.2
 - Prevent selinux context loop on /etc/crypto-policies/config
 

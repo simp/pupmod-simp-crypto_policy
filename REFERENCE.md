@@ -10,17 +10,38 @@
 * [`crypto_policy::install`](#crypto_policy--install): Manage the installation of the crypto policy package(s)
 * [`crypto_policy::update`](#crypto_policy--update): Helper class for triggering a run of update-crypto-policies
 
+### Defined types
+
+* [`crypto_policy::subpolicy`](#crypto_policy--subpolicy): Allows for management of crypto policy subpolicies. The content will not
+have any validation performed on it, so the user is responsible for ensuring
+the content is valid.
+
 ## Classes
 
 ### <a name="crypto_policy"></a>`crypto_policy`
 
 Configure the system crypto policy settings
 
+#### Examples
+
+##### Using custom subpolicies in hiera
+
+```puppet
+crypto_policy::custom_subpolicies:
+  MY_CUSTOM_SUBPOLICY:
+    content: |
+      # This is my custom subpolicy
+      algorithm = MY_CUSTOM_ALGO
+      key_size = 4096
+    ensure: present
+```
+
 #### Parameters
 
 The following parameters are available in the `crypto_policy` class:
 
 * [`ensure`](#-crypto_policy--ensure)
+* [`custom_subpolicies`](#-crypto_policy--custom_subpolicies)
 * [`validate_policy`](#-crypto_policy--validate_policy)
 * [`force_fips_override`](#-crypto_policy--force_fips_override)
 * [`manage_installation`](#-crypto_policy--manage_installation)
@@ -34,7 +55,18 @@ The system crypto policy and subpolicies that you wish to enforce
 * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
   and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 
-Default value: `pick($facts['fips_enabled'], false) ? { true => 'FIPS', default => undef`
+Default value: `$facts['fips_enabled'] ? { true => 'FIPS', default => undef`
+
+##### <a name="-crypto_policy--custom_subpolicies"></a>`custom_subpolicies`
+
+Data type: `Hash`
+
+A hash of custom subpolicy names to content that will be created in
+`/usr/share/crypto-policies/policies/modules/` prior to applying the
+selected policy. This allows users to create and apply their own
+subpolicies.
+
+Default value: `{}`
 
 ##### <a name="-crypto_policy--validate_policy"></a>`validate_policy`
 
@@ -110,5 +142,43 @@ Data type: `Stdlib::Absolutepath`
 
 The path to the command to be executed
 
-Default value: `'/usr/bin/update-crypto-policies'`
+Default value: `"/usr/bin/update-crypto-policies --set ${crypto_policy::_ensure}"`
+
+## Defined types
+
+### <a name="crypto_policy--subpolicy"></a>`crypto_policy::subpolicy`
+
+Allows for management of crypto policy subpolicies. The content will not
+have any validation performed on it, so the user is responsible for ensuring
+the content is valid.
+
+#### Parameters
+
+The following parameters are available in the `crypto_policy::subpolicy` defined type:
+
+* [`subpolicy_name`](#-crypto_policy--subpolicy--subpolicy_name)
+* [`content`](#-crypto_policy--subpolicy--content)
+* [`ensure`](#-crypto_policy--subpolicy--ensure)
+
+##### <a name="-crypto_policy--subpolicy--subpolicy_name"></a>`subpolicy_name`
+
+Data type: `String`
+
+The name of the new subpolicy
+
+Default value: `$name`
+
+##### <a name="-crypto_policy--subpolicy--content"></a>`content`
+
+Data type: `String`
+
+The content of the new subpolicy
+
+##### <a name="-crypto_policy--subpolicy--ensure"></a>`ensure`
+
+Data type: `Variant[Boolean,Enum['absent','present']]`
+
+Whether the subpolicy should (true) exist or not (false / absent)
+
+Default value: `true`
 
