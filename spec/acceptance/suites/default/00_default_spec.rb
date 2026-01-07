@@ -11,21 +11,6 @@ describe 'crypto_policy class' do
     MANIFEST
   end
 
-  let(:custom_manifest) do
-    <<~MANIFEST
-      include 'crypto_policy'
-
-      file { '/etc/crypto-policies/policies/modules/TEST_CREATED.pmod':
-        ensure  => 'file',
-        content => file('/usr/share/crypto-policies/policies/modules/OSPP.pmod'),
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        before  => File['/etc/crypto-policies/config'],
-      }
-    MANIFEST
-  end
-
   hosts.each do |host|
     if pfact_on(host, 'fips_enabled')
       let(:default_policy) { 'FIPS' }
@@ -112,21 +97,42 @@ describe 'crypto_policy class' do
       end
     end
 
-    context 'with custom manifest creating a subpolicy' do
+    context 'with custom subpolicy' do
       # Using puppet_apply as a helper
       let(:hieradata) do
         {
-          'crypto_policy::ensure'  => 'DEFAULT:TEST_CREATED',
-          'sub_policies_available' => ['TEST_CREATED'],
+          'crypto_policy::ensure' => 'DEFAULT:TEST_CREATED',
+          'crypto_policy::custom_subpolicies' => {
+            'TEST_CREATED' => {
+              'content' => <<~CONTENT,
+                hash = -SHA1
+                sign = -*-SHA1
+                sha1_in_certs = 0
+              CONTENT
+            },
+          }
         }
       end
 
       it 'works without error' do
-        apply_manifest_on(host, custom_manifest, catch_failures: true)
+        set_hieradata_on(host, hieradata)
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
       it 'is idempotent' do
-        apply_manifest_on(host, custom_manifest, { catch_changes: true })
+        apply_manifest_on(host, manifest, { catch_changes: true })
+      end
+
+      it 'has crypto policy set to DEFAULT:TEST_CREATED' do
+        expected = 'DEFAULT:TEST_CREATED'
+
+        # 1) Verify the config file content (strip whitespace/newlines)
+        cfg = on(host, 'cat /etc/crypto-policies/config').stdout.strip
+        expect(cfg).to eq(expected), "Expected /etc/crypto-policies/config to be '#{expected}', got '#{cfg}'"
+
+        # 2) Verify the active policy (strip to handle trailing newline)
+        active = on(host, 'update-crypto-policies --show').stdout.strip
+        expect(active).to eq(expected), "Expected active crypto policy to be '#{expected}', got '#{active}'"
       end
     end
 

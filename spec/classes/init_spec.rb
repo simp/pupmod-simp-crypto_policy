@@ -91,6 +91,34 @@ describe 'crypto_policy' do
           it { is_expected.to create_exec('update global crypto policy') }
         end
 
+        context 'with a custom subpolicy' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT:TEST_SUBPOLICY',
+              custom_subpolicies: {
+                'TEST_SUBPOLICY' => {
+                  'content' => <<~CONTENT,
+                    [module_crypto_policy]
+                    requires = NONE
+                    allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                  CONTENT
+                },
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it {
+            is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY.pmod').with_content(
+              <<~CONTENT,
+                [module_crypto_policy]
+                requires = NONE
+                allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+              CONTENT
+            )
+          }
+        end
+
         context 'with ensure set to non-existent global policy' do
           let(:params) do
             {

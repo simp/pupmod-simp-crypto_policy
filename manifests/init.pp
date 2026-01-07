@@ -6,14 +6,19 @@
 #   * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
 #     and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 #
-# @param global_policies_available
-#   The list of global policies available on the system, leave default to
-#   automatically populate from facts
-#
-# @param sub_policies_available
-#   The list of sub policies available on the system, leave default to
-#   automatically populate from facts
-#
+# @param custom_subpolicies
+#   A hash of custom subpolicy names to content that will be created in
+#   `/usr/share/crypto-policies/policies/modules/` prior to applying the
+#   selected policy. This allows users to create and apply their own
+#   subpolicies.
+# @example Using custom subpolicies in hiera
+#   crypto_policy::custom_subpolicies:
+#     MY_CUSTOM_SUBPOLICY:
+#       content: |
+#         # This is my custom subpolicy
+#         algorithm = MY_CUSTOM_ALGO
+#         key_size = 4096
+#       ensure: present
 # @param validate_policy
 #   Disables validation of the `$ensure` parameter prior to application
 #
@@ -30,8 +35,7 @@
 #
 class crypto_policy (
   Optional[String]  $ensure                    = $facts['fips_enabled'] ? { true => 'FIPS', default => undef },
-  Optional[Array]   $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available'),
-  Optional[Array]   $sub_policies_available    = $facts.dig('crypto_policy_state', 'sub_policies_available'),
+  Optional[Hash]    $custom_subpolicies        = undef,
   Boolean           $validate_policy           = true,
   Boolean           $force_fips_override       = false,
   Boolean           $manage_installation       = true
@@ -56,6 +60,33 @@ class crypto_policy (
 
     Class["${module_name}::install"] -> Class["${module_name}::update"]
   }
+
+  if $custom_subpolicies {
+    $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
+      crypto_policy::subpolicy { $subpolicy_name:
+        ensure  => $subpolicy_params.get('ensure', true),
+        content => $subpolicy_params['content'],
+      }
+    }
+  }
+
+  $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available')
+  # Add any custom subpolicies to the available sub policies in case they haven't been picked up by facter yet
+  $existing_sub_policies = $facts.dig('crypto_policy_state', 'sub_policies_available')
+
+  if $existing_sub_policies == '' or $existing_sub_policies == undef {
+    $existing_sub_policies_clean = []
+  } else {
+    $existing_sub_policies_clean = $existing_sub_policies
+  }
+
+  $sub_policies_available = unique(
+    $existing_sub_policies_clean +
+    ($custom_subpolicies ? {
+        Hash    => $custom_subpolicies.keys,
+        default => [],
+    })
+  )
 
   if $_ensure and $global_policies_available and $sub_policies_available {
     $_policy_components = $_ensure.split(':')
