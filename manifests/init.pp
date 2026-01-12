@@ -40,7 +40,13 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy (
-  String        $ensure              = $facts['fips_enabled'] ? { true => 'FIPS', default => $facts['crypto_policy_state']['global_policy'] },
+  String        $ensure              = $facts['fips_enabled'] ? {
+    true    => 'FIPS',
+    default => ($facts.dig('crypto_policy_state','global_policy') ? {
+        undef   => 'DEFAULT',
+        default => $facts.dig('crypto_policy_state','global_policy'),
+    })
+  },
   Array[String] $subpolicies         = [],
   Hash          $custom_subpolicies  = {},
   Boolean       $validate_policy     = true,
