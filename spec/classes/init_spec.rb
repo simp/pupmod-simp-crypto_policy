@@ -28,7 +28,7 @@ describe 'crypto_policy' do
               <<~CONTENT,
                 DEFAULT
               CONTENT
-            ).that_notifies('Class[crypto_policy::update]') 
+            ).that_notifies('Class[crypto_policy::update]')
         }
 
         context 'when not managing the installation' do
