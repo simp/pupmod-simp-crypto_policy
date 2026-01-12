@@ -102,7 +102,7 @@ describe 'crypto_policy class' do
       let(:hieradata) do
         {
           'crypto_policy::ensure' => 'DEFAULT:OSPP',
-          'crypto_policy::subpolicies' => ['NO-SHA1'],
+          'crypto_policy::subpolicies' => ['AD-SUPPORT'],
         }
       end
 
@@ -115,8 +115,8 @@ describe 'crypto_policy class' do
         apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'has crypto policy set to DEFAULT:OSPP:NO-SHA1' do
-        expected = 'DEFAULT:OSPP:NO-SHA1'
+      it 'has crypto policy set to DEFAULT:OSPP:AD-SUPPORT' do
+        expected = 'DEFAULT:OSPP:AD-SUPPORT'
 
         # 1) Verify the config file content (strip whitespace/newlines)
         cfg = on(host, 'cat /etc/crypto-policies/config').stdout.strip
@@ -171,7 +171,7 @@ describe 'crypto_policy class' do
       # Using puppet_apply as a helper
       let(:hieradata) do
         {
-          'crypto_policy::ensure' => 'DEFAULT:NO-SHA1',
+          'crypto_policy::ensure' => 'DEFAULT:AD-SUPPORT',
           'crypto_policy::subpolicies' => ['OSPP'],
           'crypto_policy::custom_subpolicies' => {
             'TEST_CREATED' => {
@@ -194,8 +194,8 @@ describe 'crypto_policy class' do
         apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'has crypto policy set to DEFAULT:NO-SHA1:OSPP:TEST_CREATED' do
-        expected = 'DEFAULT:NO-SHA1:OSPP:TEST_CREATED'
+      it 'has crypto policy set to DEFAULT:AD-SUPPORT:OSPP:TEST_CREATED' do
+        expected = 'DEFAULT:AD-SUPPORT:OSPP:TEST_CREATED'
 
         # 1) Verify the config file content (strip whitespace/newlines)
         cfg = on(host, 'cat /etc/crypto-policies/config').stdout.strip
