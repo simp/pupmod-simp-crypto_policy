@@ -1,10 +1,16 @@
 # @summary Configure the system crypto policy settings
 #
 # @param ensure
-#   The system crypto policy and subpolicies that you wish to enforce
+#   The global system crypto policy to enforce (DEFAULT, FIPS, etc). You may specify subpolicies here,
+#   however, it is recommended to use the `subpolicies` parameter for clarity or specify your own
+#   in `custom_subpolicies`.
 #
 #   * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
 #     and `$facts['crypto_policy_state']['sub_policies_available']`for validity
+#
+# @param subpolicies
+#   An array of subpolicy names to apply in addition to the main policy specified
+#   in the `ensure` parameter. These will be in addition to any custom_subpolicies specified.
 #
 # @param custom_subpolicies
 #   A hash of custom subpolicy names to content that will be created in
@@ -34,31 +40,15 @@
 # @author https://github.com/simp/pupmod-simp-crypto_policy/graphs/contributors
 #
 class crypto_policy (
-  Optional[String]  $ensure                    = $facts['fips_enabled'] ? { true => 'FIPS', default => undef },
-  Hash              $custom_subpolicies        = {},
-  Boolean           $validate_policy           = true,
-  Boolean           $force_fips_override       = false,
-  Boolean           $manage_installation       = true
+  String        $ensure              = $facts['fips_enabled'] ? { true => 'FIPS', default => $facts['crypto_policy_state']['global_policy'] },
+  Array[String] $subpolicies         = [],
+  Hash          $custom_subpolicies  = {},
+  Boolean       $validate_policy     = true,
+  Boolean       $force_fips_override = false,
+  Boolean       $manage_installation = true
 ) {
-  # FIPS systems should always switch to FIPS mode
-  if $facts['fips_enabled'] {
-    if $force_fips_override {
-      $_ensure = $ensure
-    }
-    else {
-      $_ensure = 'FIPS'
-    }
-  }
-  else {
-    $_ensure = $ensure
-  }
-
-  include crypto_policy::update
-
   if $manage_installation {
     include crypto_policy::install
-
-    Class["${module_name}::install"] -> Class["${module_name}::update"]
   }
 
   $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
@@ -66,6 +56,35 @@ class crypto_policy (
       ensure  => $subpolicy_params.get('ensure', true),
       content => $subpolicy_params['content'],
     }
+  }
+
+  $_policy_components = $ensure.split(':')
+  $_global_policy = $_policy_components[0]
+  # Remove any custom_subpolicy entries we don't want to enforce
+  $_enforced_sub_policies = $custom_subpolicies.filter |$subpolicy_name, $subpolicy_params| {
+    $ensure_val = $subpolicy_params.get('ensure', true)
+    $ensure_val != 'absent' and $ensure_val != false
+  }
+
+  # Collect all sub policies specified in the ensure parameter plus those in the subpolicies parameter and managed in custom_subpolicies
+  $_sub_policies = unique($_policy_components.delete($_policy_components[0]) + $subpolicies + $_enforced_sub_policies.keys)
+
+  $_collected_subpolicies = $_sub_policies ? {
+    []      => '',
+    default => ":${_sub_policies.join(':')}",
+  }
+
+  # FIPS systems should always switch to FIPS mode
+  if $facts['fips_enabled'] {
+    if $force_fips_override {
+      $_ensure = "${_global_policy}${_collected_subpolicies}"
+    }
+    else {
+      $_ensure = 'FIPS'
+    }
+  }
+  else {
+    $_ensure = "${_global_policy}${_collected_subpolicies}"
   }
 
   $global_policies_available = $facts.dig('crypto_policy_state', 'global_policies_available')
@@ -83,9 +102,6 @@ class crypto_policy (
   )
 
   if $_ensure and $global_policies_available and $sub_policies_available {
-    $_policy_components = $_ensure.split(':')
-    $_global_policy = $_policy_components[0]
-    $_sub_policies = $_policy_components.delete($_policy_components[0])
     unless $_global_policy in $global_policies_available {
       $_available_policies = join($global_policies_available,"', '")
 
@@ -103,6 +119,14 @@ class crypto_policy (
       # Any sub policies not available to use will be displayed back to the user
       $_unknown_sub_policies = join(($_sub_policies - $sub_policies_available), "', '")
       fail("${module_name}::ensure unknown sub_policies (${$_unknown_sub_policies}) must be one of '${_available_sub_policies}'")
+    }
+
+    class { 'crypto_policy::update':
+      command => "/usr/bin/update-crypto-policies --set ${_ensure}",
+    }
+
+    if $manage_installation {
+      Class["${module_name}::install"] -> Class["${module_name}::update"]
     }
 
     # We Removed the "Managed by Puppet" content to accomodate el 10 os flavors
