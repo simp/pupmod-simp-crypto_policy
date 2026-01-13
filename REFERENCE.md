@@ -41,6 +41,7 @@ crypto_policy::custom_subpolicies:
 The following parameters are available in the `crypto_policy` class:
 
 * [`ensure`](#-crypto_policy--ensure)
+* [`subpolicies`](#-crypto_policy--subpolicies)
 * [`custom_subpolicies`](#-crypto_policy--custom_subpolicies)
 * [`validate_policy`](#-crypto_policy--validate_policy)
 * [`force_fips_override`](#-crypto_policy--force_fips_override)
@@ -48,14 +49,33 @@ The following parameters are available in the `crypto_policy` class:
 
 ##### <a name="-crypto_policy--ensure"></a>`ensure`
 
-Data type: `Optional[String]`
+Data type: `String`
 
-The system crypto policy and subpolicies that you wish to enforce
+The global system crypto policy to enforce (DEFAULT, FIPS, etc). You may specify subpolicies here,
+however, it is recommended to use the `subpolicies` parameter for clarity or specify your own
+in `custom_subpolicies`.
 
 * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
   and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 
-Default value: `$facts['fips_enabled'] ? { true => 'FIPS', default => undef`
+Default value:
+
+```puppet
+$facts['fips_enabled'] ? {
+    true    => 'FIPS',
+    default => ($facts.dig('crypto_policy_state','global_policy') ? {
+        undef   => 'DEFAULT',
+        default => $facts.dig('crypto_policy_state','global_policy')
+```
+
+##### <a name="-crypto_policy--subpolicies"></a>`subpolicies`
+
+Data type: `Array[String]`
+
+An array of subpolicy names to apply in addition to the main policy specified
+in the `ensure` parameter. These will be in addition to any custom_subpolicies specified.
+
+Default value: `[]`
 
 ##### <a name="-crypto_policy--custom_subpolicies"></a>`custom_subpolicies`
 
@@ -170,9 +190,11 @@ Default value: `$name`
 
 ##### <a name="-crypto_policy--subpolicy--content"></a>`content`
 
-Data type: `String`
+Data type: `Optional[String]`
 
 The content of the new subpolicy
+
+Default value: `undef`
 
 ##### <a name="-crypto_policy--subpolicy--ensure"></a>`ensure`
 

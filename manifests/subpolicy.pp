@@ -8,7 +8,7 @@
 # @param ensure
 #   Whether the subpolicy should (true) exist or not (false / absent)
 define crypto_policy::subpolicy (
-  String                                    $content,
+  Optional[String]                          $content = undef,
   String                                    $subpolicy_name = $name,
   Variant[Boolean,Enum['absent','present']] $ensure = true,
 ) {
@@ -19,6 +19,10 @@ define crypto_policy::subpolicy (
   }
 
   if $_ensure {
+    if $content == undef {
+      fail("${module_name}::subpolicy ${subpolicy_name}: 'content' parameter must be provided when 'ensure' is true")
+    }
+
     file { '/usr/share/crypto-policies/policies/modules':
       ensure  => directory,
       mode    => '0755',

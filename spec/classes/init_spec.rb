@@ -9,6 +9,8 @@ describe 'crypto_policy' do
       let(:facts) do
         os_facts.merge(
           crypto_policy_state: {
+            'global_policy'             => 'DEFAULT',
+            'global_policy_applied'     => true,
             'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE'],
             'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP']
           },
@@ -21,7 +23,13 @@ describe 'crypto_policy' do
         it { is_expected.to create_class('crypto_policy') }
         it { is_expected.to create_class('crypto_policy::update') }
         it { is_expected.to create_class('crypto_policy::install').that_comes_before('Class[crypto_policy::update]') }
-        it { is_expected.not_to create_file('/etc/crypto-policies/config') }
+        it {
+          is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+        }
 
         context 'when not managing the installation' do
           let(:params) { { manage_installation: false } }
@@ -91,10 +99,29 @@ describe 'crypto_policy' do
           it { is_expected.to create_exec('update global crypto policy') }
         end
 
+        context 'with additional subpolicies' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              subpolicies: ['NO-SHA1', 'OSPP']
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT:NO-SHA1:OSPP
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+        end
+
         context 'with a custom subpolicy' do
           let(:params) do
             {
-              ensure: 'DEFAULT:TEST_SUBPOLICY',
+              ensure: 'DEFAULT',
               custom_subpolicies: {
                 'TEST_SUBPOLICY' => {
                   'content' => <<~CONTENT,
@@ -108,6 +135,15 @@ describe 'crypto_policy' do
           end
 
           it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT:TEST_SUBPOLICY
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+
           it {
             is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY.pmod').with_content(
               <<~CONTENT,
@@ -117,6 +153,94 @@ describe 'crypto_policy' do
               CONTENT
             )
           }
+        end
+
+        context 'with a custom subpolicy that specifies an absent subpolicy' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              custom_subpolicies: {
+                'TEST_SUBPOLICY' => {
+                  'content' => <<~CONTENT,
+                    [module_crypto_policy]
+                    requires = NONE
+                    allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                  CONTENT
+                },
+                'ABSENT_SUBPOLICY' => {
+                  'ensure'  => 'absent',
+                },
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT:TEST_SUBPOLICY
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+
+          it {
+            is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY.pmod').with_content(
+              <<~CONTENT,
+                [module_crypto_policy]
+                requires = NONE
+                allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+              CONTENT
+            )
+          }
+
+          it {
+            is_expected.to create_file('/usr/share/crypto-policies/policies/modules/ABSENT_SUBPOLICY.pmod').with_ensure('absent')
+          }
+        end
+
+        context 'with a custom subpolicy and additional subpolicies' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              subpolicies: ['NO-SHA1'],
+              custom_subpolicies: {
+                'TEST_SUBPOLICY' => {
+                  'content' => <<~CONTENT,
+                    hash = -SHA1
+                    sign = -*-SHA1
+                    sha1_in_certs = 0
+                  CONTENT
+                }
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT:NO-SHA1:TEST_SUBPOLICY
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+        end
+
+        context 'with a custom subpolicy and no content' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              subpolicies: ['NO-SHA1'],
+              custom_subpolicies: {
+                'TEST_SUBPOLICY' => {
+                  'ensure' => true,
+                }
+              }
+            }
+          end
+
+          it { is_expected.not_to compile }
         end
 
         context 'with ensure set to non-existent global policy' do
