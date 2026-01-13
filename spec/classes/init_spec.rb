@@ -227,6 +227,22 @@ describe 'crypto_policy' do
           }
         end
 
+        context 'with a custom subpolicy and no content' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              subpolicies: ['NO-SHA1'],
+              custom_subpolicies: {
+                'TEST_SUBPOLICY' => {
+                  'ensure' => true,
+                }
+              }
+            }
+          end
+
+          it { is_expected.not_to compile }
+        end
+
         context 'with ensure set to non-existent global policy' do
           let(:params) do
             {
