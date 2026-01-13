@@ -58,7 +58,15 @@ in `custom_subpolicies`.
 * Will be checked against `$facts['crypto_policy_state']['global_policies_available']`
   and `$facts['crypto_policy_state']['sub_policies_available']`for validity
 
-Default value: `$facts['fips_enabled'] ? { true => 'FIPS', default => $facts['crypto_policy_state']['global_policy']`
+Default value:
+
+```puppet
+$facts['fips_enabled'] ? {
+    true    => 'FIPS',
+    default => ($facts.dig('crypto_policy_state','global_policy') ? {
+        undef   => 'DEFAULT',
+        default => $facts.dig('crypto_policy_state','global_policy')
+```
 
 ##### <a name="-crypto_policy--subpolicies"></a>`subpolicies`
 
