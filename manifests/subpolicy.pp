@@ -19,7 +19,7 @@ define crypto_policy::subpolicy (
   }
 
   if $_ensure {
-    if content == undef {
+    if $content == undef {
       fail("${module_name}::subpolicy ${subpolicy_name}: 'content' parameter must be provided when 'ensure' is true")
     }
 

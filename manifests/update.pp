@@ -11,7 +11,7 @@
 class crypto_policy::update (
   Stdlib::Absolutepath $command = "/usr/bin/update-crypto-policies --set ${crypto_policy::_ensure}", # lint:ignore:variable_scope
 ) {
-  if $facts['crypto_policy_state'] and  $crypto_policy::_ensure {
+  if $facts['crypto_policy_state'] and $crypto_policy::_ensure {
     exec { 'update global crypto policy':
       command     => $command,
       refreshonly => true,
