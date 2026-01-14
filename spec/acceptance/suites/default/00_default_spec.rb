@@ -167,6 +167,53 @@ describe 'crypto_policy class' do
       end
     end
 
+    context 'with multiple custom subpolicies' do
+      # Using puppet_apply as a helper
+      let(:hieradata) do
+        {
+          'crypto_policy::ensure' => 'DEFAULT:OSPP',
+          'crypto_policy::custom_subpolicies' => {
+            'TEST1' => {
+              'content' => <<~CONTENT,
+                hash = -SHA1
+              CONTENT
+            },
+            'TEST2' => {
+              'content' => <<~CONTENT,
+                sign = -*-SHA1
+              CONTENT
+            },
+            'TEST3' => {
+              'content' => <<~CONTENT,
+                sha1_in_certs = 0
+              CONTENT
+            },
+          }
+        }
+      end
+
+      it 'works without error' do
+        set_hieradata_on(host, hieradata)
+        apply_manifest_on(host, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
+      end
+
+      it 'has crypto policy set to DEFAULT:OSPP:TEST1:TEST2:TEST3' do
+        expected = 'DEFAULT:OSPP::TEST1:TEST2:TEST3'
+
+        # 1) Verify the config file content (strip whitespace/newlines)
+        cfg = on(host, 'cat /etc/crypto-policies/config').stdout.strip
+        expect(cfg).to eq(expected), "Expected /etc/crypto-policies/config to be '#{expected}', got '#{cfg}'"
+
+        # 2) Verify the active policy (strip to handle trailing newline)
+        active = on(host, 'update-crypto-policies --show').stdout.strip
+        expect(active).to eq(expected), "Expected active crypto policy to be '#{expected}', got '#{active}'"
+      end
+    end
+
     context 'with custom subpolicy and additional subpolicies' do
       # Using puppet_apply as a helper
       let(:hieradata) do

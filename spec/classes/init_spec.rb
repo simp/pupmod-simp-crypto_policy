@@ -125,9 +125,7 @@ describe 'crypto_policy' do
               custom_subpolicies: {
                 'TEST_SUBPOLICY' => {
                   'content' => <<~CONTENT,
-                    [module_crypto_policy]
-                    requires = NONE
-                    allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                    cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
                   CONTENT
                 },
               }
@@ -147,9 +145,7 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY.pmod').with_content(
               <<~CONTENT,
-                [module_crypto_policy]
-                requires = NONE
-                allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
               CONTENT
             )
           }
@@ -162,9 +158,7 @@ describe 'crypto_policy' do
               custom_subpolicies: {
                 'TEST_SUBPOLICY' => {
                   'content' => <<~CONTENT,
-                    [module_crypto_policy]
-                    requires = NONE
-                    allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                    cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
                   CONTENT
                 },
                 'ABSENT_SUBPOLICY' => {
@@ -187,15 +181,59 @@ describe 'crypto_policy' do
           it {
             is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY.pmod').with_content(
               <<~CONTENT,
-                [module_crypto_policy]
-                requires = NONE
-                allows = AES-128-GCM AES-256-GCM CHACHA20-POLY1305
+                cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
               CONTENT
             )
           }
 
           it {
             is_expected.to create_file('/usr/share/crypto-policies/policies/modules/ABSENT_SUBPOLICY.pmod').with_ensure('absent')
+          }
+        end
+
+        context 'with multiple custom subpolicies' do
+          let(:params) do
+            {
+              ensure: 'DEFAULT',
+              custom_subpolicies: {
+                'TEST_SUBPOLICY1' => {
+                  'content' => <<~CONTENT,
+                    cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
+                  CONTENT
+                },
+                'TEST_SUBPOLICY2' => {
+                  'content' => <<~CONTENT,
+                    mac@SSH = -HMAC-MD5* -UMAC-64* -UMAC-128*
+                  CONTENT
+                },
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_file('/etc/crypto-policies/config').with_content(
+              <<~CONTENT,
+                DEFAULT:TEST_SUBPOLICY1:TEST_SUBPOLICY2
+              CONTENT
+            ).that_notifies('Class[crypto_policy::update]')
+          }
+
+          it {
+            is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY1.pmod').with_content(
+              <<~CONTENT,
+                cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
+              CONTENT
+            )
+          }
+
+          it {
+            is_expected.to create_file('/usr/share/crypto-policies/policies/modules/TEST_SUBPOLICY2.pmod').with_content(
+              <<~CONTENT,
+                mac@SSH = -HMAC-MD5* -UMAC-64* -UMAC-128*
+              CONTENT
+            )
           }
         end
 

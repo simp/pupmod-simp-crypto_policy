@@ -57,6 +57,16 @@ class crypto_policy (
     include crypto_policy::install
   }
 
+  # Ensure the directory we will be putting subpolicies into exists
+  unless $custom_subpolicies.empty {
+    file { '/usr/share/crypto-policies/policies/modules':
+      ensure => directory,
+      mode   => '0755',
+      owner  => 'root',
+      group  => 'root',
+    }
+  }
+
   $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
     crypto_policy::subpolicy { $subpolicy_name:
       ensure  => $subpolicy_params.get('ensure', true),
