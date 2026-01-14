@@ -202,7 +202,7 @@ describe 'crypto_policy class' do
       end
 
       it 'has crypto policy set to DEFAULT:OSPP:TEST1:TEST2:TEST3' do
-        expected = 'DEFAULT:OSPP::TEST1:TEST2:TEST3'
+        expected = 'DEFAULT:OSPP:TEST1:TEST2:TEST3'
 
         # 1) Verify the config file content (strip whitespace/newlines)
         cfg = on(host, 'cat /etc/crypto-policies/config').stdout.strip
