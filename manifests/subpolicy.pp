@@ -23,13 +23,6 @@ define crypto_policy::subpolicy (
       fail("${module_name}::subpolicy ${subpolicy_name}: 'content' parameter must be provided when 'ensure' is true")
     }
 
-    file { '/usr/share/crypto-policies/policies/modules':
-      ensure  => directory,
-      mode    => '0755',
-      owner   => 'root',
-      group   => 'root',
-      require => Class["${module_name}::install"],
-    }
     file { "/usr/share/crypto-policies/policies/modules/${subpolicy_name}.pmod":
       ensure  => file,
       content => $content,

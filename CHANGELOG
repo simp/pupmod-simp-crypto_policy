@@ -1,3 +1,6 @@
+* Wed Jan 14 2026 Mike Riddle <mike@sicura.us> - 2.0.1
+- Fixed a bug that would prevent users from specifying more than 1 custom subpolicy
+
 * Mon Jan 12 2026 Mike Riddle <mike@sicura.us> - 2.0.0
 - Allow users to add additional subpolicies to existing ones
 - The ensure parameter is no longer optional, but has a default
