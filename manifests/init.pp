@@ -71,6 +71,7 @@ class crypto_policy (
     crypto_policy::subpolicy { $subpolicy_name:
       ensure  => $subpolicy_params.get('ensure', true),
       content => $subpolicy_params['content'],
+      before  => Class["${module_name}::update"],
     }
   }
 

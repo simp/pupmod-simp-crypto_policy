@@ -30,7 +30,6 @@ define crypto_policy::subpolicy (
       owner   => 'root',
       group   => 'root',
       require => File['/usr/share/crypto-policies/policies/modules'],
-      before  => Class["${module_name}::update"],
     }
   } else {
     file { "/usr/share/crypto-policies/policies/modules/${subpolicy_name}.pmod":
