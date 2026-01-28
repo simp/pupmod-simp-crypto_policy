@@ -67,14 +67,6 @@ class crypto_policy (
     }
   }
 
-  $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
-    crypto_policy::subpolicy { $subpolicy_name:
-      ensure  => $subpolicy_params.get('ensure', true),
-      content => $subpolicy_params['content'],
-      before  => Class["${module_name}::update"],
-    }
-  }
-
   $_policy_components = $ensure.split(':')
   $_global_policy = $_policy_components[0]
   # Remove any custom_subpolicy entries we don't want to enforce
@@ -140,6 +132,14 @@ class crypto_policy (
 
     class { 'crypto_policy::update':
       command => "/usr/bin/update-crypto-policies --set ${_ensure}",
+    }
+
+    $custom_subpolicies.each |$subpolicy_name, $subpolicy_params| {
+      crypto_policy::subpolicy { $subpolicy_name:
+        ensure  => $subpolicy_params.get('ensure', true),
+        content => $subpolicy_params['content'],
+        before  => Class["${module_name}::update"],
+      }
     }
 
     if $manage_installation {
