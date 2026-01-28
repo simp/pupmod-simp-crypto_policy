@@ -1,3 +1,6 @@
+* Wed Jan 28 2026 Mike Riddle <mike@sicura.us> - 2.0.3
+- Made subpolicy definitions safer
+
 * Tue Jan 27 2026 Mike Riddle <mike@sicura.us> - 2.0.2
 - Moved where subpolicies are defined to happen before the update class
 
