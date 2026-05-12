@@ -1,3 +1,6 @@
+* Tue May 12 2026 Steven Pritchard <steve@sicura.us> - 2.0.4
+- Support Oracle/Rocky 10
+
 * Wed Jan 28 2026 Mike Riddle <mike@sicura.us> - 2.0.3
 - Made subpolicy definitions safer
 
