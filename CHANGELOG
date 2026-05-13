@@ -1,5 +1,8 @@
 * Tue May 12 2026 Steven Pritchard <steve@sicura.us> - 2.0.4
-- Support Oracle/Rocky 10
+- Add Oracle Linux 10 and Rocky Linux 10 support
+- Switch default acceptance nodeset to EL10 (Rocky 10)
+- Source Oracle Linux vagrant boxes from oracle.github.io upstream JSON
+  metadata instead of the deprecated generic/oracle* boxes
 
 * Wed Jan 28 2026 Mike Riddle <mike@sicura.us> - 2.0.3
 - Made subpolicy definitions safer
