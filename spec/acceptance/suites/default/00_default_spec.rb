@@ -43,7 +43,7 @@ describe 'crypto_policy class' do
     context 'when setting the config to a global policy' do
       let(:hieradata) do
         {
-          'crypto_policy::ensure' => 'LEGACY'
+          'crypto_policy::ensure' => 'LEGACY',
         }
       end
 
@@ -141,7 +141,7 @@ describe 'crypto_policy class' do
                 sha1_in_certs = 0
               CONTENT
             },
-          }
+          },
         }
       end
 
@@ -188,7 +188,7 @@ describe 'crypto_policy class' do
                 sha1_in_certs = 0
               CONTENT
             },
-          }
+          },
         }
       end
 
@@ -228,7 +228,7 @@ describe 'crypto_policy class' do
                 sha1_in_certs = 0
               CONTENT
             },
-          }
+          },
         }
       end
 
@@ -258,7 +258,7 @@ describe 'crypto_policy class' do
       let(:hieradata) do
         {
           'crypto_policy::ensure' => 'DEFAULT:OSPP',
-          'force_fips_override'   => true
+          'force_fips_override'   => true,
         }
       end
 
