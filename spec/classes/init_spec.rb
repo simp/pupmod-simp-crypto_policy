@@ -12,7 +12,7 @@ describe 'crypto_policy' do
             'global_policy'             => 'DEFAULT',
             'global_policy_applied'     => true,
             'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE'],
-            'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP']
+            'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP'],
           },
           fips_enabled: fips_enabled,
         )
@@ -103,7 +103,7 @@ describe 'crypto_policy' do
           let(:params) do
             {
               ensure: 'DEFAULT',
-              subpolicies: ['NO-SHA1', 'OSPP']
+              subpolicies: ['NO-SHA1', 'OSPP'],
             }
           end
 
@@ -128,7 +128,7 @@ describe 'crypto_policy' do
                     cipher@SSH = -3DES-CBC -AES-128-CBC -AES-192-CBC -AES-256-CBC -CHACHA20-POLY1305
                   CONTENT
                 },
-              }
+              },
             }
           end
 
@@ -164,7 +164,7 @@ describe 'crypto_policy' do
                 'ABSENT_SUBPOLICY' => {
                   'ensure'  => 'absent',
                 },
-              }
+              },
             }
           end
 
@@ -206,7 +206,7 @@ describe 'crypto_policy' do
                     mac@SSH = -HMAC-MD5* -UMAC-64* -UMAC-128*
                   CONTENT
                 },
-              }
+              },
             }
           end
 
@@ -249,8 +249,8 @@ describe 'crypto_policy' do
                     sign = -*-SHA1
                     sha1_in_certs = 0
                   CONTENT
-                }
-              }
+                },
+              },
             }
           end
 
@@ -273,8 +273,8 @@ describe 'crypto_policy' do
               custom_subpolicies: {
                 'TEST_SUBPOLICY' => {
                   'ensure' => true,
-                }
-              }
+                },
+              },
             }
           end
 
@@ -330,7 +330,7 @@ describe 'crypto_policy' do
             let(:params) do
               {
                 ensure: 'DEFAULT',
-                force_fips_override: true
+                force_fips_override: true,
               }
             end
 
