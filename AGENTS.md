@@ -46,14 +46,16 @@ or lock you out.
   fact may not have picked them up yet); an unknown policy/subpolicy `fail()`s
   with the list of valid values. **This whole apply-and-validate block only runs
   when the `crypto_policy_state` fact is populated** (`$_ensure` +
-  `global_policies_available` + `sub_policies_available` all truthy) — on a node
-  without `update-crypto-policies` the class is effectively a no-op.
+  `global_policies_available` + `sub_policies_available` all non-`undef`/non-`false`) —
+  `manage_installation` (default `true`) may still install packages; if it installs
+  `update-crypto-policies`, enforcement won't occur until a later run when facts refresh.
 - **Application** — writes `/etc/crypto-policies/config` (`0644`,
   `selinux_ignore_defaults => true` to stop SELinux-context flapping) containing
   just the policy string, and declares `class { 'crypto_policy::update': }` with
-  `command => "/usr/bin/update-crypto-policies --set ${_ensure}"`. Both the
-  config file change and the subpolicy files `notify`/order into the update.
-  Ordering: `install -> subpolicies -> update`.
+  `command => "/usr/bin/update-crypto-policies --set ${_ensure}"`. The config file
+  `notify`'s `crypto_policy::update`. `custom_subpolicies` are ordered before the update
+  (`before => Class['crypto_policy::update']`) but do **not** currently notify it, so
+  changing only a `.pmod` file won't trigger an update.
 
 **`crypto_policy::install` (`manifests/install.pp`, private — `assert_private()`)**
 — manages the `crypto-policies` and `crypto-policies-scripts` packages,
@@ -62,9 +64,9 @@ FIPS). Only included when `manage_installation` is true.
 
 **`crypto_policy::update` (`manifests/update.pp`)** — a helper class holding the
 `exec { 'update global crypto policy': refreshonly => true }` that actually runs
-`update-crypto-policies --set`. **Deliberately not private** so other modules can
-trigger a policy refresh without pulling in full management. Warns (and does
-nothing) if the `crypto_policy_state` fact is absent. The EL10
+`update-crypto-policies --set`. Warns (and does nothing) if the `crypto_policy_state`
+fact is absent. It also guards on `$crypto_policy::_ensure`, but that variable is not
+set anywhere in this module, so the exec never runs as written.
 `update-crypto-policies` binary ignores `/etc/crypto-policies/config`, so the
 explicit `--set` is required — do not "simplify" it away.
 
