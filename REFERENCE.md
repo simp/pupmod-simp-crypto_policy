@@ -92,7 +92,17 @@ Default value: `{}`
 
 Data type: `Boolean`
 
-Disables validation of the `$ensure` parameter prior to application
+Validates the global policy and subpolicies in `$ensure` against those
+reported by the `crypto_policy_state` fact prior to application
+
+* Set this to `false` if the policies you are enforcing are provided during
+  the same Puppet run that applies them. The fact is gathered before the
+  catalog is applied, so policies installed by a package or by another
+  module are not yet visible to it and would otherwise fail validation.
+
+* WARNING: With validation disabled, an invalid policy is not caught at
+  compile time. `update-crypto-policies` fails when the catalog is applied
+  instead.
 
 Default value: `true`
 
