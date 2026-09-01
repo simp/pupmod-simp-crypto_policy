@@ -1,3 +1,9 @@
+* Tue Sep 01 2026 Hazel Caballero <hazel@sicura.us> - 3.1.0
+- Wire up the `validate_policy` parameter, which was declared and documented
+  but never referenced. Setting it to `false` now skips validating `$ensure`
+  against the `crypto_policy_state` fact, for policies that are provided during
+  the same Puppet run that applies them.
+
 * Mon Aug 24 2026 Steven Pritchard <steve@sicura.us> - 3.0.1
 - [puppetsync] Update metadata.json dependency ranges from the Forge
 
