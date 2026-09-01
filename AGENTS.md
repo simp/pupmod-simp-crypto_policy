@@ -85,11 +85,19 @@ source of truth the manifests validate against.
 
 ### Gotchas / non-obvious details
 
-- **`validate_policy` is currently a dead parameter.** It is declared (default
-  `true`) and documented as disabling `$ensure` validation, but nothing in
-  `init.pp` references it — validation is actually gated on the *fact* being
-  populated, not on this flag. Don't assume setting it changes behavior; wire it
-  up if that's the intent.
+- **Validation is gated twice, and the two gates mean different things.** The
+  `if $_ensure and $global_policies_available and $sub_policies_available` block
+  in `init.pp` wraps the `fail()` checks *and* all enforcement — when the
+  `crypto_policy_state` fact is absent the module does nothing at all. The inner
+  `if $validate_policy` wraps only the two `fail()` calls. Don't collapse them:
+  gating the outer block on `validate_policy` would turn the flag into "do
+  nothing", which is the opposite of what it means.
+- **The fact is a pre-catalog snapshot.** `crypto_policy_state` is gathered
+  before the catalog is applied, so it cannot see policies installed during the
+  same run. `custom_subpolicies` keys are merged into `sub_policies_available`
+  to work around this for subpolicies this module declares; global policies and
+  externally-provided subpolicies have no such workaround, which is what
+  `validate_policy => false` is for.
 - This module does **not** depend on `simp/simplib` and uses **no**
   `simp_options::*` lookup seam — unlike most SIMP modules it is essentially
   standalone. Don't add `simplib::lookup` defaults by reflex.

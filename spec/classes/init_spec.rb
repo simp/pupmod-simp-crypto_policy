@@ -311,6 +311,67 @@ describe 'crypto_policy' do
           it { is_expected.not_to compile }
         end
 
+        context 'with validation disabled' do
+          context 'with ensure set to a non-existent global policy' do
+            let(:params) do
+              {
+                ensure: 'FAKE',
+                validate_policy: false,
+              }
+            end
+
+            it { is_expected.to compile.with_all_deps }
+
+            it {
+              is_expected.to create_file('/etc/crypto-policies/config').with_content(
+                <<~CONTENT,
+                  FAKE
+                CONTENT
+              ).that_notifies('Class[crypto_policy::update]')
+            }
+
+            it { is_expected.to create_exec('update global crypto policy') }
+          end
+
+          context 'with ensure set to a non-existent subpolicy' do
+            let(:params) do
+              {
+                ensure: 'DEFAULT:FAKE',
+                validate_policy: false,
+              }
+            end
+
+            it { is_expected.to compile.with_all_deps }
+
+            it {
+              is_expected.to create_file('/etc/crypto-policies/config').with_content(
+                <<~CONTENT,
+                  DEFAULT:FAKE
+                CONTENT
+              ).that_notifies('Class[crypto_policy::update]')
+            }
+          end
+
+          context 'with a valid policy' do
+            let(:params) do
+              {
+                ensure: 'DEFAULT:NO-SHA1',
+                validate_policy: false,
+              }
+            end
+
+            it { is_expected.to compile.with_all_deps }
+
+            it {
+              is_expected.to create_file('/etc/crypto-policies/config').with_content(
+                <<~CONTENT,
+                  DEFAULT:NO-SHA1
+                CONTENT
+              ).that_notifies('Class[crypto_policy::update]')
+            }
+          end
+        end
+
         context 'with the system in FIPS mode' do
           let(:fips_enabled) { true }
 
