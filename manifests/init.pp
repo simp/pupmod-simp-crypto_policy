@@ -26,7 +26,17 @@
 #         key_size = 4096
 #       ensure: present
 # @param validate_policy
-#   Disables validation of the `$ensure` parameter prior to application
+#   Validates the global policy and subpolicies in `$ensure` against those
+#   reported by the `crypto_policy_state` fact prior to application
+#
+#   * Set this to `false` if the policies you are enforcing are provided during
+#     the same Puppet run that applies them. The fact is gathered before the
+#     catalog is applied, so policies installed by a package or by another
+#     module are not yet visible to it and would otherwise fail validation.
+#
+#   * WARNING: With validation disabled, an invalid policy is not caught at
+#     compile time. `update-crypto-policies` fails when the catalog is applied
+#     instead.
 #
 # @param force_fips_override
 #   Set this to indicate that you wish to force the system into the mode
@@ -111,23 +121,29 @@ class crypto_policy (
   )
 
   if $_ensure and $global_policies_available and $sub_policies_available {
-    unless $_global_policy in $global_policies_available {
-      $_available_policies = join($global_policies_available,"', '")
+    # The fact is gathered before the catalog is applied, so it cannot see
+    # policies that this run installs. Users providing policies out of band can
+    # set $validate_policy to false and let update-crypto-policies do the
+    # checking at apply time instead.
+    if $validate_policy {
+      unless $_global_policy in $global_policies_available {
+        $_available_policies = join($global_policies_available,"', '")
 
-      if $ensure == $_ensure {
-        $ensure_message = $ensure
-      } else {
-        $ensure_message = "${ensure}, overridden to ${_ensure}"
+        if $ensure == $_ensure {
+          $ensure_message = $ensure
+        } else {
+          $ensure_message = "${ensure}, overridden to ${_ensure}"
+        }
+
+        fail("${module_name}::ensure (${ensure_message}) must be one of '${_available_policies}'")
       }
 
-      fail("${module_name}::ensure (${ensure_message}) must be one of '${_available_policies}'")
-    }
-
-    unless $_sub_policies.empty or ($_sub_policies - $sub_policies_available).empty {
-      $_available_sub_policies = join($sub_policies_available, "', '")
-      # Any sub policies not available to use will be displayed back to the user
-      $_unknown_sub_policies = join(($_sub_policies - $sub_policies_available), "', '")
-      fail("${module_name}::ensure unknown sub_policies (${$_unknown_sub_policies}) must be one of '${_available_sub_policies}'")
+      unless $_sub_policies.empty or ($_sub_policies - $sub_policies_available).empty {
+        $_available_sub_policies = join($sub_policies_available, "', '")
+        # Any sub policies not available to use will be displayed back to the user
+        $_unknown_sub_policies = join(($_sub_policies - $sub_policies_available), "', '")
+        fail("${module_name}::ensure unknown sub_policies (${$_unknown_sub_policies}) must be one of '${_available_sub_policies}'")
+      }
     }
 
     class { 'crypto_policy::update':
