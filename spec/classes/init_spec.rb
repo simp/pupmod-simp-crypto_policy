@@ -162,7 +162,7 @@ describe 'crypto_policy' do
                   CONTENT
                 },
                 'ABSENT_SUBPOLICY' => {
-                  'ensure'  => 'absent',
+                  'ensure' => 'absent',
                 },
               },
             }
