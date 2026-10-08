@@ -213,4 +213,3 @@ Data type: `Variant[Boolean,Enum['absent','present']]`
 Whether the subpolicy should (true) exist or not (false / absent)
 
 Default value: `true`
-
