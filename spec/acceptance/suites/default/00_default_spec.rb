@@ -300,5 +300,31 @@ describe 'crypto_policy class' do
         expect(crypto_policy_state['global_policy_applied']).to eq true
       end
     end
+
+    # An earlier run may have written /etc/crypto-policies/config and then
+    # failed or skipped the update (for example, when crypto_policy::install
+    # failed), leaving the back-ends stale. A later run must apply the policy
+    # even though the config file already has the right content.
+    context 'when the config file was written but the policy was not applied' do
+      let(:hieradata) { { 'crypto_policy::ensure' => 'FUTURE' } }
+      let(:expected) { pfact_on(host, 'fips_enabled') ? 'FIPS' : 'FUTURE' }
+
+      it 'leaves the configured policy unapplied' do
+        set_hieradata_on(host, hieradata)
+        on(host, "echo #{expected} > /etc/crypto-policies/config")
+        on(host, 'update-crypto-policies --no-reload --is-applied', acceptable_exit_codes: [1])
+      end
+
+      it 'applies the policy without a change to the config file' do
+        apply_manifest_on(host, manifest, catch_failures: true)
+
+        on(host, 'update-crypto-policies --no-reload --is-applied')
+        expect(on(host, 'cat /etc/crypto-policies/state/current').stdout.strip).to eq(expected)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
+      end
+    end
   end
 end
