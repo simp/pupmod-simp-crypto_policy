@@ -1,3 +1,10 @@
+* Thu Oct 29 2026 Mike Riddle <mike@sicura.us> - 3.2.1
+- Run `update-crypto-policies` whenever the `crypto_policy_state` fact reports
+  that the configured policy is not applied. Previously, if the update failed
+  or was skipped after `/etc/crypto-policies/config` was written (for example,
+  because installing the packages failed), later runs never applied the policy
+  and the back-ends stayed stale.
+
 * Thu Oct 08 2026 Steven Pritchard <steve@sicura.us> - 3.2.0
 - Add support for OpenVox 9
 - Update metadata.json dependency ranges from the Forge

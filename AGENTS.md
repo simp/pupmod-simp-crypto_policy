@@ -63,8 +63,11 @@ or lock you out.
 FIPS). Only included when `manage_installation` is true.
 
 **`crypto_policy::update` (`manifests/update.pp`)** — a helper class holding the
-`exec { 'update global crypto policy': refreshonly => true }` that actually runs
-`update-crypto-policies --set`. Warns (and does nothing) if the `crypto_policy_state`
+`exec { 'update global crypto policy' }` that actually runs
+`update-crypto-policies --set`. The exec is `refreshonly`, except when the
+`crypto_policy_state` fact reports `global_policy_applied => false`; then it runs
+unconditionally, so an update that failed or was skipped in an earlier run (after
+`/etc/crypto-policies/config` was already written) is retried. Warns (and does nothing) if the `crypto_policy_state`
 fact is absent. It also guards on `$crypto_policy::_ensure`, but that variable is not
 set anywhere in this module, so the exec never runs as written.
 `update-crypto-policies` binary ignores `/etc/crypto-policies/config`, so the

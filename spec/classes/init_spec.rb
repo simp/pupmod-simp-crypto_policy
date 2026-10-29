@@ -6,11 +6,12 @@ describe 'crypto_policy' do
   on_supported_os.each do |os, os_facts|
     context 'with required facts' do
       let(:fips_enabled) { false }
+      let(:global_policy_applied) { true }
       let(:facts) do
         os_facts.merge(
           crypto_policy_state: {
             'global_policy'             => 'DEFAULT',
-            'global_policy_applied'     => true,
+            'global_policy_applied'     => global_policy_applied,
             'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE'],
             'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP'],
           },
@@ -30,6 +31,37 @@ describe 'crypto_policy' do
               CONTENT
             ).that_notifies('Class[crypto_policy::update]')
         }
+
+        it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true) }
+
+        context 'when the configured policy is not applied' do
+          let(:global_policy_applied) { false }
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to create_exec('update global crypto policy').with(
+              command: '/usr/bin/update-crypto-policies --set DEFAULT',
+              refreshonly: false,
+            )
+          }
+        end
+
+        context 'when the crypto_policy_state fact does not report whether the policy is applied' do
+          let(:facts) do
+            os_facts.merge(
+              crypto_policy_state: {
+                'global_policy'             => 'DEFAULT',
+                'global_policies_available' => ['DEFAULT', 'FIPS', 'LEGACY', 'FUTURE', 'NONE'],
+                'sub_policies_available'    => ['AD-SUPPORT', 'ECDHE-ONLY', 'NO-CAMELLIA', 'NO-SHA1', 'OSPP'],
+              },
+              fips_enabled: fips_enabled,
+            )
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true) }
+        end
 
         context 'when not managing the installation' do
           let(:params) { { manage_installation: false } }
