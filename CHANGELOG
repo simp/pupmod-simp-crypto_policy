@@ -4,6 +4,9 @@
   or was skipped after `/etc/crypto-policies/config` was written (for example,
   because installing the packages failed), later runs never applied the policy
   and the back-ends stayed stale.
+- With `validate_policy => false`, a policy that `update-crypto-policies`
+  rejects now fails every run until it is fixed. Previously only the first
+  run failed, and later runs reported success with the policy unapplied.
 
 * Thu Oct 08 2026 Steven Pritchard <steve@sicura.us> - 3.2.0
 - Add support for OpenVox 9

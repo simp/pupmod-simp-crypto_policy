@@ -32,7 +32,7 @@ describe 'crypto_policy' do
             ).that_notifies('Class[crypto_policy::update]')
         }
 
-        it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true) }
+        it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true).without_unless }
 
         context 'when the configured policy is not applied' do
           let(:global_policy_applied) { false }
@@ -43,6 +43,7 @@ describe 'crypto_policy' do
             is_expected.to create_exec('update global crypto policy').with(
               command: '/usr/bin/update-crypto-policies --set DEFAULT',
               refreshonly: false,
+              unless: '/usr/bin/update-crypto-policies --no-reload --is-applied',
             )
           }
         end
@@ -60,7 +61,7 @@ describe 'crypto_policy' do
           end
 
           it { is_expected.to compile.with_all_deps }
-          it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true) }
+          it { is_expected.to create_exec('update global crypto policy').with_refreshonly(true).without_unless }
         end
 
         context 'when not managing the installation' do

@@ -162,9 +162,10 @@ an update but do not wish to include full management
 
 The update runs when this class is refreshed. It also runs without a refresh
 when the `crypto_policy_state` fact reports that the configured policy is not
-applied, so an update that failed or was skipped in an earlier run (for
-example, because `crypto_policy::install` failed after
-`/etc/crypto-policies/config` had been written) is retried in a later run.
+applied and `update-crypto-policies --is-applied` still agrees at apply time,
+so an update that failed or was skipped in an earlier run (for example,
+because `crypto_policy::install` failed after `/etc/crypto-policies/config`
+had been written) is retried in a later run.
 
 #### Parameters
 

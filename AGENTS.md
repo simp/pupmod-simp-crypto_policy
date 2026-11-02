@@ -67,11 +67,14 @@ FIPS). Only included when `manage_installation` is true.
 `update-crypto-policies --set`. The exec is `refreshonly`, except when the
 `crypto_policy_state` fact reports `global_policy_applied => false`; then it runs
 unconditionally, so an update that failed or was skipped in an earlier run (after
-`/etc/crypto-policies/config` was already written) is retried. Warns (and does nothing) if the `crypto_policy_state`
-fact is absent. It also guards on `$crypto_policy::_ensure`, but that variable is not
-set anywhere in this module, so the exec never runs as written.
-`update-crypto-policies` binary ignores `/etc/crypto-policies/config`, so the
-explicit `--set` is required — do not "simplify" it away.
+`/etc/crypto-policies/config` was already written) is retried. In that case it
+also has `unless => 'update-crypto-policies --no-reload --is-applied'`, because the
+fact is a pre-run snapshot: a cached catalog must not run the update on every apply,
+and a refresh in the same run must not run it twice. Warns (and does nothing) if the
+`crypto_policy_state` fact is absent or `$crypto_policy::_ensure` (set in `init.pp`)
+is empty. On EL10 the `update-crypto-policies` binary ignores
+`/etc/crypto-policies/config`, so the explicit `--set` is required — do not
+"simplify" it away.
 
 **`crypto_policy::subpolicy` (`manifests/subpolicy.pp`, define)** — manages a
 single `${subpolicy_name}.pmod` file. `ensure` accepts `true`/`false`/`'present'`/
