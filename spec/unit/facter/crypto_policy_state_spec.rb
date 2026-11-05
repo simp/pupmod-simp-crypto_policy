@@ -12,6 +12,8 @@ describe :crypto_policy_state, type: :fact do
       Facter.clear
 
       allow(Dir).to receive(:glob).and_call_original
+      allow(Facter::Core::Execution).to receive(:which).and_call_original
+      allow(Facter::Core::Execution).to receive(:execute).and_call_original
     end
 
     context "on #{os}" do
@@ -23,7 +25,7 @@ describe :crypto_policy_state, type: :fact do
 
       context 'with a functional update-crypto-policies command' do
         before :each do
-          allow(Facter::Util::Resolution).to receive(:which)
+          allow(Facter::Core::Execution).to receive(:which)
             .with('update-crypto-policies')
             .and_return('/usr/bin/update-crypto-policies')
           allow(Facter::Core::Execution).to receive(:execute)
@@ -46,6 +48,11 @@ describe :crypto_policy_state, type: :fact do
             allow(Facter::Core::Execution).to receive(:execute)
               .with('/usr/bin/update-crypto-policies --no-reload --is-applied', on_fail: false)
               .and_return("The configured policy is applied\n")
+          end
+
+          it 'does not use the deprecated Facter::Util::Resolution.which' do
+            expect(Facter::Util::Resolution).not_to receive(:which).with('update-crypto-policies')
+            fact.value
           end
 
           it do
@@ -92,7 +99,7 @@ describe :crypto_policy_state, type: :fact do
 
       context 'when update-crypto-policies is not available' do
         before :each do
-          allow(Facter::Util::Resolution).to receive(:which).with('update-crypto-policies').and_return(nil)
+          allow(Facter::Core::Execution).to receive(:which).with('update-crypto-policies').and_return(nil)
         end
 
         it 'returns nil' do

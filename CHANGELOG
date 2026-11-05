@@ -1,3 +1,8 @@
+* Thu Nov 05 2026 Steven Pritchard <steve@sicura.us> - 3.2.2
+- Fixed an OpenVox 9 (OpenFact 6) deprecation warning from the
+  `crypto_policy_state` fact by using `Facter::Core::Execution.which` instead
+  of `Facter::Util::Resolution.which`
+
 * Thu Oct 29 2026 Mike Riddle <mike@sicura.us> - 3.2.1
 - Run `update-crypto-policies` whenever the `crypto_policy_state` fact reports
   that the configured policy is not applied. Previously, if the update failed
