@@ -18,7 +18,7 @@
 Facter.add('crypto_policy_state') do
   confine kernel: :linux
 
-  crypto_policy_cmd = Facter::Util::Resolution.which('update-crypto-policies')
+  crypto_policy_cmd = Facter::Core::Execution.which('update-crypto-policies')
   confine { crypto_policy_cmd }
 
   setcode do
